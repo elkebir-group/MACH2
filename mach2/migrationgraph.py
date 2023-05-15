@@ -60,17 +60,18 @@ class MigrationGraph:
         for s, t, _ in self.graph.edges:
             g.edge(s, t, color=f"{colormap[s]};0.5:{colormap[t]}")
         return g
-    
+
     def write_dot(self, filename, colormap=None, colormap_file=None):
-        import graphviz as gv
         if colormap is None:
             if colormap_file is None:
                 colormap = utils.get_colormap(self.sites)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
-        g = gv.Digraph(node_attr={'shape': 'box', 'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={'penwidth': '3', 'colorscheme': 'set19'})
-        for s in self.graph.nodes:
-            g.node(s, color=str(colormap[s]))
-        for s, t, _ in self.graph.edges:
-            g.edge(s, t, color=f"{colormap[s]};0.5:{colormap[t]}")
-        g.render(filename=filename)
+        with open(filename, 'w+') as f:
+            f.write('digraph G {\n')
+            for s in self.graph.nodes:
+                f.write(f'\t{s} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
+            for s, t, _ in self.graph.edges:
+                f.write(f'\t{s} -> {t} [penwidth=3,colorscheme=set19,' +
+                            f'color="{colormap[s]};0.5:{colormap[t]}"]\n')
+            f.write('}\n')

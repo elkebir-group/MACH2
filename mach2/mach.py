@@ -98,7 +98,6 @@ class MACH:
         self.m.root_constraints = pyo.ConstraintList()
         self.m.root_constraints.add(sum(self.m.r[s] for s in self.Sigma) == 1)
 
-
     def _add_constraints_for_p(self):
         self.m.p_constraints = pyo.ConstraintList()
         for s in self.Sigma:
@@ -150,6 +149,20 @@ class MACH:
                 for t in self.Sigma:
                     if s != t:
                         self.m.polytomy_constraints_set_l.add(self.m.g[s, t, i] <= sum(self.m.p[s, t, ij] for ij in delta_i))
+
+        for i in self.V:
+            if i[0] != self.clone_tree.root:
+                pii = self.clone_tree.get_parent_arc(i[0])
+            delta_i = self.clone_tree.get_children_arcs(i[0])
+            for ij in delta_i:
+                for s in self.Sigma:
+                    sum1 = 0
+                    if i[0] != self.clone_tree.root:
+                        sum1 = sum(self.m.g[t,s,pii] for t in self.Sigma)
+                    else:
+                        sum1 = self.m.r[s]
+                    sum2 = sum(self.m.p[s,t,ij]+self.m.g[s,t,ij] for t in self.Sigma)
+                    self.m.polytomy_constraints_set_l.add(sum1 <= sum2)
 
         # self.m.polytomy_constraints_valid_structure = pyo.ConstraintList()
         # for i in self.V:
@@ -329,10 +342,10 @@ class MACH:
                 opt._solver_model.params.SolutionNumber = soln
                 ell = defaultdict(list)
                 G = defaultdict(list)
-                # r = []
-                # z = []
-                # p = defaultdict(list)
-                # b = defaultdict(list)
+                r = []
+                z = []
+                p = defaultdict(list)
+                b = defaultdict(list)
                 mu = 0
                 gamma = 0
                 for i in self.V:
@@ -347,8 +360,8 @@ class MACH:
                                 G[i].append((s_1, s_2))
                                 if s_1 != s_2:
                                     mu += 1
-                            # if opt._pyomo_var_to_solver_var_map[self.m.p[s_1, s_2, i]].Xn > 0.5:
-                            #     p[i].append((s_1, s_2))
+                            if opt._pyomo_var_to_solver_var_map[self.m.p[s_1, s_2, i]].Xn > 0.5:
+                                p[i].append((s_1, s_2))
                             # print(f'G[{s_1},{s_2},{i}] = {opt._pyomo_var_to_solver_var_map[self.m.g[s_1, s_2, i]].Xn}')
                             # print(f'p[{s_1},{s_2},{i}] = {opt._pyomo_var_to_solver_var_map[self.m.p[s_1, s_2, i]].Xn}')
                         for i in self.V:
@@ -360,19 +373,19 @@ class MACH:
                 for s_1 in self.Sigma:
                     for s_2 in self.Sigma:
                         if opt._pyomo_var_to_solver_var_map[self.m.z[s_1, s_2]].Xn > 0.5:
-                            # z.append((s_1,s_2, opt._pyomo_var_to_solver_var_map[self.m.z[s_1, s_2]].Xn))
+                            z.append((s_1,s_2, opt._pyomo_var_to_solver_var_map[self.m.z[s_1, s_2]].Xn))
                             gamma += 1#opt._pyomo_var_to_solver_var_map[self.m.z[s_1, s_2]].Xn
                         # for l in self.L:
-                        #     if opt._pyomo_var_to_solver_var_map[self.m.b[s_1, s_2, l]].Xn > 0.5:
-                        #         b[(s_1,s_2)].append(l)
+                            # if opt._pyomo_var_to_solver_var_map[self.m.b[s_1, s_2, l]].Xn > 0.5:
+                                # b[(s_1,s_2)].append(l)
                         # print(f'z[{s_1},{s_2}] = {opt._pyomo_var_to_solver_var_map[self.m.z[s_1, s_2]].Xn}')
-                # for s in self.Sigma:
-                #     if opt._pyomo_var_to_solver_var_map[self.m.r[s]].Xn > 0.5:
-                #         r.append(s)
+                for s in self.Sigma:
+                    if opt._pyomo_var_to_solver_var_map[self.m.r[s]].Xn > 0.5:
+                        r.append(s)
                     # print(f'r[{s}] = {opt._pyomo_var_to_solver_var_map[self.m.r[s]].Xn}')
                 solution_raw = {'vertex_multilabeling': ell,
-                                'aug_mig_graph': G, 'n_mig': int(mu), 'n_comig': int(gamma)}
-                                #   'other': {'r': r, 'z': z, 'p':p, 'b':b}}
+                                'aug_mig_graph': G, 'n_mig': int(mu), 'n_comig': int(gamma),#}
+                                  'other': {'r': r, 'z': z, 'p':p, 'b':b}}
                 if self.seeding_site:
                     sigma = 0
                     for s in self.Sigma:
@@ -384,6 +397,7 @@ class MACH:
             return solutions_raw
         else:
             return SolutionSet([(RefinedCloneTree(self.clone_tree, raw), MigrationGraph(raw)) for raw in solutions_raw])
+
 
 def process_args():
     parser = argparse.ArgumentParser(description='MACH2')

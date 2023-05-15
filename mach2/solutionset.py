@@ -76,3 +76,52 @@ class SolutionSet:
                      colorscheme='set19', color=f'{colormap[uv[0]]};0.5:{colormap[uv[1]]}')
             
         return dot
+    
+    def summary_dot(self, filename, primary=None, colormap=None, colormap_file=None, consider_multi_edges=False):
+        if primary is None:
+            sol_set = self.solution_set_whole
+        else:
+            sol_set = self.solution_set[primary]
+        summary_graph = defaultdict(int)
+        sites = set()
+        max_val = 0
+        for solution in sol_set:
+            for u1, v1 in solution.migration_graph.migration_edges():
+                summary_graph[(u1, v1)] += 1
+                if max_val < summary_graph[(u1, v1)]:
+                    max_val = summary_graph[(u1, v1)]
+                sites.update([u1, v1])
+
+        import graphviz as gv
+        if colormap is None:
+            if colormap_file is None:
+                colormap = utils.get_colormap(self.sites)
+            else:
+                colormap = utils.process_colormap_file(colormap_file)
+        with open(filename, 'w+') as f:
+            f.write('digraph G {\n')
+            for s in sites:
+                f.write(f'\t{s} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
+            for st in summary_graph:
+                f.write(f'\t{st[0]} -> {st[1]} [penwidth={summary_graph[st] * 5/max_val},colorscheme=set19,' +
+                            f'color="{colormap[st[0]]};0.5:{colormap[st[1]]}"]\n')
+            f.write('}\n')
+
+    # def summary_write(self, filename, primary=None):
+    #     if primary is None:
+    #         sol_set = self.solution_set_whole
+    #     else:
+    #         sol_set = self.solution_set[primary]
+    #     summary_graph = defaultdict(int)
+    #     sites = set()
+    #     max_val = 0
+    #     for solution in sol_set:
+    #         for u1, v1 in solution.migration_graph.migration_edges():
+    #             summary_graph[(u1, v1)] += 1
+    #             if max_val < summary_graph[(u1, v1)]:
+    #                 max_val = summary_graph[(u1, v1)]
+    #             sites.update([u1, v1])
+
+    #     with open(filename, 'w+') as f:
+    #         for st in summary_graph:
+    #             f.write(f'{st[0]}\t{st[1]}\t{summary_graph[st] * 5/max_val}\n')
