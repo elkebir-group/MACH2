@@ -329,8 +329,7 @@ class MACH:
 
     def solve(self, solver, nSolutions, logfile=None, n_threads=1, raw=False):
         if solver == 'gurobi':
-            opt = SolverFactory("gurobi", solver_io='python', options={
-                                'MIPGap': 0, 'PoolSolutions': nSolutions, 'PoolSearchMode': 2, 'threads': n_threads, 'LogToConsole': 0})
+            opt = SolverFactory("gurobi", solver_io='python', options={ 'MIPGap': 0, 'PoolSolutions': nSolutions, 'PoolSearchMode': 2, 'threads': n_threads, 'LogToConsole': 0, 'LogFile': logfile})
             opt.solve(self.m, load_solutions=True, tee=True)
             if self.suboptimal_mode and self.specific_mig_comig is None:
                 n_actual_solutions = opt._solver_model.SolCount
@@ -422,7 +421,7 @@ def process_args():
 
 def main():
     args = process_args()
-    clone_tree = CloneTree.from_file(args.clone_tree, args.leaf_labeling, primary_site=args.primary)
+    clone_tree = CloneTree.from_file(args.clone_tree, args.leaf_labeling)
 
     if args.output is None:
         output_str = '.'

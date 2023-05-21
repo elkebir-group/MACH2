@@ -1,0 +1,22 @@
+digraph T {
+	{
+		rank=same
+		0 [penwidth=3,colorscheme=set19,color=0,label="A1\nROv"]
+		1 [penwidth=3,colorscheme=set19,color=1,label="A2\nLOv"]
+		2 [penwidth=3,colorscheme=set19,color=2,label="A3\nOm"]
+		3 [penwidth=3,colorscheme=set19,color=1,label="B\nLOv"]
+		4 [penwidth=3,colorscheme=set19,color=0,label="C1\nROv"]
+		5 [penwidth=3,colorscheme=set19,color=1,label="C2\nLOv"]
+		6 [penwidth=3,colorscheme=set19,color=2,label="C3\nOm"]
+	}
+	7 [penwidth=3,colorscheme=set19,color=0,label="A"]
+	8 [penwidth=3,colorscheme=set19,color=0,label="C"]
+	7 -> 0 [penwidth=3,colorscheme=set19,color=0]
+	7 -> 1 [penwidth=3,colorscheme=set19,color=0]
+	7 -> 2 [penwidth=3,colorscheme=set19,color=0]
+	7 -> 3 [penwidth=3,colorscheme=set19,color=0]
+	7 -> 8 [penwidth=3,colorscheme=set19,color=0]
+	8 -> 4 [penwidth=3,colorscheme=set19,color=0]
+	8 -> 5 [penwidth=3,colorscheme=set19,color=0]
+	8 -> 6 [penwidth=3,colorscheme=set19,color=0]
+}

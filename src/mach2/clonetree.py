@@ -289,6 +289,9 @@ class RefinedCloneTree(CloneTree):
                 if self.get_label(i) != self.get_label(j):
                     f.write(f'\t{node_edge_index[i]} -> {node_edge_index[j]} [penwidth=3,colorscheme=set19,' +
                         f'color=\"{colormap[self.get_label(i)]};0.5:{colormap[self.get_label(j)]}\",label=\"  {self.timestamps[(i,j)]}\"]\n')
+                else:
+                    f.write(f'\t{node_edge_index[i]} -> {node_edge_index[j]} [penwidth=3,colorscheme=set19,' +
+                        f'color=\"{colormap[self.get_label(i)]};0.5:{colormap[self.get_label(j)]}\"]\n')
             f.write('}\n')
 
     def draw(self, colormap=None, colormap_file=None):

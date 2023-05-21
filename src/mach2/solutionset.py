@@ -98,12 +98,13 @@ class SolutionSet:
                 colormap = utils.get_colormap(self.sites)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
+        node_index = {j:i for i,j in enumerate(sites)}
         with open(filename, 'w+') as f:
             f.write('digraph G {\n')
             for s in sites:
-                f.write(f'\t{s} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
+                f.write(f'\t{node_index[s]} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
             for st in summary_graph:
-                f.write(f'\t{st[0]} -> {st[1]} [penwidth={summary_graph[st] * 5/max_val},colorscheme=set19,' +
+                f.write(f'\t{node_index[st[0]]} -> {node_index[st[1]]} [penwidth={summary_graph[st] * 5/max_val},colorscheme=set19,' +
                             f'color="{colormap[st[0]]};0.5:{colormap[st[1]]}"]\n')
             f.write('}\n')
 

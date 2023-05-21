@@ -67,11 +67,12 @@ class MigrationGraph:
                 colormap = utils.get_colormap(self.sites)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
+        node_index = {j:i for i,j in enumerate(self.graph.nodes)}
         with open(filename, 'w+') as f:
             f.write('digraph G {\n')
             for s in self.graph.nodes:
-                f.write(f'\t{s} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
+                f.write(f'\t{node_index[s]} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
             for s, t, _ in self.graph.edges:
-                f.write(f'\t{s} -> {t} [penwidth=3,colorscheme=set19,' +
+                f.write(f'\t{node_index[s]} -> {node_index[t]} [penwidth=3,colorscheme=set19,' +
                             f'color="{colormap[s]};0.5:{colormap[t]}"]\n')
             f.write('}\n')
