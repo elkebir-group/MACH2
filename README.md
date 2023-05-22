@@ -4,14 +4,14 @@ A mathematical framework for inferring migration histories of metastatic cancer 
 
 ## Table of contents
 
-1. Installation  
-        - Prerequisite. 
-        - Install using `pip`  
-2. Usage instruction  
-        - I/O formats  
-        - Input  
-        - Output  
-        - Usage  
+1. [Installation](#installation)  
+        - [Prerequisite](#prerequisite)  
+        - [Install using `pip`](#install-using-pip)
+2. [Usage instruction](#usage-instruction)  
+        - [I/O formats](#i-o-formats)  
+        - [Input](#input)  
+        - [Output](#output)  
+        - [Usage](#usage)  
 
 ## 1. Installation
 
