@@ -326,7 +326,7 @@ class MACH:
                 return e
         return opt._solver_model.SolCount
 
-    def solve(self, solver, nSolutions, logfile="", n_threads=0, raw=False):
+    def solve(self, solver, nSolutions, logfile=None, n_threads=0, raw=False):
         if solver == 'gurobi':
             opt = SolverFactory("gurobi", solver_io='python', options={ 'MIPGap': 0, 'PoolSolutions': nSolutions, 'PoolSearchMode': 2, 'threads': n_threads, 'LogToConsole': 0, 'LogFile': logfile})
             opt.solve(self.m, load_solutions=True, tee=True)
