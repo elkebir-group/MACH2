@@ -1,4 +1,4 @@
-10 #anatomical sites
+10 #anatomical locations
 10 #samples
 20 #mutations
 #sample_index	sample_label	anatomical_site_index	anatomical_site_label	character_index	character_label	ref	var

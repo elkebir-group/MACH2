@@ -1,2 +1,2 @@
 from .mach import MACH
-from  .clonetree import CloneTree
+from  .phylogeny import Phylogeny

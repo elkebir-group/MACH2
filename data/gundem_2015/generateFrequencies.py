@@ -73,7 +73,7 @@ if __name__ == "__main__":
     k = len(indexToSample)
     n = len(indexToCharacter)
 
-    print m, "#anatomical sites"
+    print m, "#anatomical locations"
     print k, "#samples"
     print n, "#mutations" 
     print "\t".join(["#sample_index","sample_label","#anatomical_site_index","anatomical_site_label","character_index","character_label","f_lb","f_ub"])

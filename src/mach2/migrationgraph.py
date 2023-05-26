@@ -10,11 +10,11 @@ class MigrationGraph:
             for s, t in i:
                 if s != t:
                     self.graph.add_edge(s, t)
-        self.sites = [i for i in self.graph.nodes]
+        self.locations = [i for i in self.graph.nodes]
         self.n_mig = raw['n_mig']
         self.n_comig = raw['n_comig']
-        if 'n_seedingsites' in raw:
-            self.n_seedingsites = raw['n_seedingsites']
+        if 'n_seedinglocations' in raw:
+            self.n_seedinglocations = raw['n_seedinglocations']
 
     def has_migration(self, a, b):
         return self.graph.number_of_edges(a,b) > 0
@@ -51,7 +51,7 @@ class MigrationGraph:
         import graphviz as gv
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.sites)
+                colormap = utils.get_colormap(self.locations)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         g = gv.Digraph(node_attr={'shape': 'box', 'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={'penwidth': '3', 'colorscheme': 'set19'})
@@ -60,11 +60,14 @@ class MigrationGraph:
         for s, t, _ in self.graph.edges:
             g.edge(s, t, color=f"{colormap[s]};0.5:{colormap[t]}")
         return g
+    
+    def _repr_mimebundle_(self, include=None, exclude=None, **_):
+        return self.draw()._repr_mimebundle_(include=include, exclude=exclude)
 
     def write_dot(self, filename, colormap=None, colormap_file=None):
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.sites)
+                colormap = utils.get_colormap(self.locations)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         node_index = {j:i for i,j in enumerate(self.graph.nodes)}

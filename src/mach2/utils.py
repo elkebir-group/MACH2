@@ -7,6 +7,6 @@ def process_colormap_file(colormap_file):
 
     return colormap
 
-def get_colormap(sites):
-    return {s: (i+1) for i, s in enumerate(sites)}
+def get_colormap(locations):
+    return {s: (i+1) for i, s in enumerate(locations)}
 

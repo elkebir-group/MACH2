@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "mach2"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Mrinmoy Saha Roddur", email="mroddur2@illinois.edu" },
 ]
@@ -19,11 +19,10 @@ classifiers = [
 ]
 keywords = ["Computational biology", "Bioinformatics", "Cancer", "Metastasis", "Phylogeny"]
 dependencies = [
-    'numpy',
     'pandas',
     'pyomo',
     'networkx',
-    'gurobi'
+    'gurobipy'
 ]
 
 [project.optional-dependencies]

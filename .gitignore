@@ -1,4 +1,5 @@
-*.ipynb
 mach2/__pycache__
 build
 dist
+.ipynb_checkpoints
+token.txt

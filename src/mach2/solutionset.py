@@ -9,9 +9,9 @@ class SolutionSet:
     class Solution:
 
         def __init__(self, tree, graph):
-            self.clone_tree = tree
+            self.phylogeny = tree
             self.migration_graph = graph
-            self.sites = self.clone_tree.sites
+            self.locations = self.phylogeny.locations
             self.n_migrations = self.migration_graph.n_mig
             self.n_comigrations = self.migration_graph.n_comig
 
@@ -19,8 +19,8 @@ class SolutionSet:
         self.solution_set_whole = [SolutionSet.Solution(tree, graph) for (tree, graph) in sol_list]
         self.solution_set = defaultdict(set)
         for solution in self.solution_set_whole:
-            self.solution_set[solution.clone_tree.primary_site].add(solution)
-        self.sites = sol_list[0][0].sites
+            self.solution_set[solution.phylogeny.primary_site].add(solution)
+        self.locations = sol_list[0][0].locations
 
     def __len__(self):
         return len(self.solution_set_whole)
@@ -51,23 +51,23 @@ class SolutionSet:
         else:
             sol_set = self.solution_set[primary]
         summary_graph = defaultdict(int)
-        sites = set()
+        locations = set()
         max_val = 0
         for solution in sol_set:
             for u1, v1 in solution.migration_graph.migration_edges():
                 summary_graph[(u1, v1)] += 1
                 if max_val < summary_graph[(u1, v1)]:
                     max_val = summary_graph[(u1, v1)]
-                sites.update([u1, v1])
+                locations.update([u1, v1])
 
         import graphviz as gv
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.sites)
+                colormap = utils.get_colormap(self.locations)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         dot = gv.Digraph(engine='dot')
-        for i in sites:
+        for i in locations:
             dot.node(i, colorscheme='set19', color=str(
                 colormap[i]), shape='box', penwidth='3')
 
@@ -83,25 +83,25 @@ class SolutionSet:
         else:
             sol_set = self.solution_set[primary]
         summary_graph = defaultdict(int)
-        sites = set()
+        locations = set()
         max_val = 0
         for solution in sol_set:
             for u1, v1 in solution.migration_graph.migration_edges():
                 summary_graph[(u1, v1)] += 1
                 if max_val < summary_graph[(u1, v1)]:
                     max_val = summary_graph[(u1, v1)]
-                sites.update([u1, v1])
+                locations.update([u1, v1])
 
         import graphviz as gv
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.sites)
+                colormap = utils.get_colormap(self.locations)
             else:
                 colormap = utils.process_colormap_file(colormap_file)
-        node_index = {j:i for i,j in enumerate(sites)}
+        node_index = {j:i for i,j in enumerate(locations)}
         with open(filename, 'w+') as f:
             f.write('digraph G {\n')
-            for s in sites:
+            for s in locations:
                 f.write(f'\t{node_index[s]} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
             for st in summary_graph:
                 f.write(f'\t{node_index[st[0]]} -> {node_index[st[1]]} [penwidth={summary_graph[st] * 5/max_val},colorscheme=set19,' +
@@ -114,14 +114,14 @@ class SolutionSet:
     #     else:
     #         sol_set = self.solution_set[primary]
     #     summary_graph = defaultdict(int)
-    #     sites = set()
+    #     locations = set()
     #     max_val = 0
     #     for solution in sol_set:
     #         for u1, v1 in solution.migration_graph.migration_edges():
     #             summary_graph[(u1, v1)] += 1
     #             if max_val < summary_graph[(u1, v1)]:
     #                 max_val = summary_graph[(u1, v1)]
-    #             sites.update([u1, v1])
+    #             locations.update([u1, v1])
 
     #     with open(filename, 'w+') as f:
     #         for st in summary_graph:
