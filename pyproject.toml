@@ -28,7 +28,7 @@ dependencies = [
 [project.optional-dependencies]
 jupyter = [
     "jupyterlab",
-    "python-graphviz",
+    "graphviz",
 ]
 
 [project.scripts]

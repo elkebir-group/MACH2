@@ -66,7 +66,7 @@ class Phylogeny:
                 raise ValueError(f'Site label of leaf {leaf} is missing')
         self._infer_paths()
 
-    def from_file(phylogeny_filename: str, labeling_filename: str) -> Phylogeny:
+    def from_file(phylogeny_filename: str, labeling_filename: str, colormap_file: str | None = None) -> Phylogeny:
         """Create a Phylogeny object from tree and labeling files.
 
         Args:
@@ -95,7 +95,10 @@ class Phylogeny:
                 except:
                     raise ValueError('Ill-formatted input labeling file')
                 attrs[a] = l
-        return Phylogeny(edges, attrs)
+        colormap = None
+        if colormap_file is not None:
+            colormap = utils.process_colormap_file(colormap_file)
+        return Phylogeny(edges, attrs, colormap)
     
     def from_pandas(phylogeny_df: pd.DataFrame, labeling_df: pd.DataFrame) -> Phylogeny:
         """Create a Phylogeny object from pandas DataFrames containing tree and leaf/vertex labeling.
@@ -258,7 +261,10 @@ class Phylogeny:
         import graphviz as gv
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.locations)
+                if self.colormap is None:
+                    colormap = utils.get_colormap(self.locations)
+                else:
+                    colormap = self.colormap
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         t = gv.Digraph(node_attr={'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={
@@ -326,9 +332,12 @@ class RefinedPhylogeny(Phylogeny):
             else:
                 edge += (v,)
             edges.append(edge)
-        super().__init__(edges, labels)
+        super().__init__(edges, labels, colormap=phylogeny.colormap)
         self.primary_site: str = self.get_label(self.root)
-        self.infer_timestamps()
+        try:
+            self.infer_timestamps()
+        except:
+            pass
 
     def _infer_timestamps_rec(self, u, prev_st, comig_to_mig, mig_to_comig, comig_graph, last_comig):
         s = self.get_label(u)
@@ -381,7 +390,11 @@ class RefinedPhylogeny(Phylogeny):
         mig_to_comig = {}
         comig_graph = nx.DiGraph()
         self._infer_timestamps_rec(self.root, prev_st, comig_to_mig, mig_to_comig, comig_graph, None)
-        comig_to_ts = {j:i+1 for i,j in enumerate(nx.topological_sort(comig_graph))}
+        self.comig_graph = comig_graph
+        try:
+            comig_to_ts = {j:i+1 for i,j in enumerate(nx.topological_sort(comig_graph))}
+        except:
+            raise Exception
         timestamps = {}
         for u, v in self.edges:
             if self.get_label(u) != self.get_label(v):
@@ -404,7 +417,10 @@ class RefinedPhylogeny(Phylogeny):
     def write_dot(self, filename, colormap=None, colormap_file=None):
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.locations)
+                if self.colormap is None:
+                    colormap = utils.get_colormap(self.locations)
+                else:
+                    colormap = self.colormap
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         with open(filename, 'w+') as f:
@@ -436,7 +452,10 @@ class RefinedPhylogeny(Phylogeny):
         import graphviz as gv
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.locations)
+                if self.colormap is None:
+                    colormap = utils.get_colormap(self.locations)
+                else:
+                    colormap = self.colormap
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         t = gv.Digraph(node_attr={'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={
@@ -452,7 +471,7 @@ class RefinedPhylogeny(Phylogeny):
                 t.node(v, color=str(
                     colormap[self.get_label(v)]))
         for i, j in self.tree.edges:
-            if self.get_label(i) != self.get_label(j):
+            if self.get_label(i) != self.get_label(j) and hasattr(self, 'timestamps'):
                 t.edge(
                     i, j, color=f"{colormap[self.get_label(i)]};0.5:{colormap[self.get_label(j)]}", label=f'  {self.timestamps[(i,j)]}')
             else:

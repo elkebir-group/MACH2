@@ -15,6 +15,8 @@ class MigrationGraph:
         self.n_comig = raw['n_comig']
         if 'n_seedinglocations' in raw:
             self.n_seedinglocations = raw['n_seedinglocations']
+        self.colormap = raw['original_tree'].colormap
+
 
     def has_migration(self, a, b):
         return self.graph.number_of_edges(a,b) > 0
@@ -51,7 +53,10 @@ class MigrationGraph:
         import graphviz as gv
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.locations)
+                if self.colormap is None:
+                    colormap = utils.get_colormap(self.locations)
+                else:
+                    colormap = self.colormap
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         g = gv.Digraph(node_attr={'shape': 'box', 'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={'penwidth': '3', 'colorscheme': 'set19'})
@@ -67,7 +72,10 @@ class MigrationGraph:
     def write_dot(self, filename, colormap=None, colormap_file=None):
         if colormap is None:
             if colormap_file is None:
-                colormap = utils.get_colormap(self.locations)
+                if self.colormap is None:
+                    colormap = utils.get_colormap(self.locations)
+                else:
+                    colormap = self.colormap
             else:
                 colormap = utils.process_colormap_file(colormap_file)
         node_index = {j:i for i,j in enumerate(self.graph.nodes)}

@@ -13,7 +13,7 @@ from . import utils
 
 class MACH:
 
-    def __init__(self, phylogeny, primary_site = None, suboptimal_mode=False, seeding_site=False, specify_migration_comigration=None, possible_migration_list=None):
+    def __init__(self, phylogeny, primary_site = None, suboptimal_mode=False, seeding_site=False, specify_migration_comigration=None, possible_migration_list=None, clones_observed=None):
         if specify_migration_comigration is not None:
             suboptimal_mode = True
         self.phylogeny = phylogeny
@@ -59,6 +59,8 @@ class MACH:
             self.add_contraints_specifying_mig_comig()
         if possible_migration_list is not None:
             self._add_constraints_2_pick_migrations_4m_given_list(possible_migration_list)
+        if clones_observed is not None:
+            self._constraints_clones_observed(clones_observed)
 
     def _add_vars(self):
         self.m.l = pyo.Var(self.V, self.Sigma, domain=pyo.Binary)
@@ -77,13 +79,13 @@ class MACH:
         self.m.q = pyo.Var(self.Sigma, domain=pyo.Binary)
 
     def _add_optimization_function(self):
-        self.m.obj = pyo.Objective(expr=sum(self.m.g[s, t, k] for s in self.Sigma for t in self.Sigma for k in self.E + self.V if s != t) +
+        self.m.obj = pyo.Objective(expr=(len(self.Sigma) ** 2) * sum(self.m.g[s, t, k] for s in self.Sigma for t in self.Sigma for k in self.E + self.V if s != t) +
                                    sum(self.m.z[s, t] for s in self.Sigma for t in self.Sigma if s != t))
 
     def _add_optimization_function_seeding_locations(self):
         self.m.obj = pyo.Objective(expr=sum(self.m.g[s, t] for s in self.Sigma for t in self.Sigma if s != t) +
-                                   sum(self.m.z[s, t] for s in self.Sigma for t in self.Sigma if s != t) +
-                                   sum(self.m.q[s] for s in self.Sigma))
+                                   (1 / len(self.Sigma) ** 2) * sum(self.m.z[s, t] for s in self.Sigma for t in self.Sigma if s != t) +
+                                   (1 / ((len(self.Sigma) ** 2) * (len(self.Sigma) + 1))) * sum(self.m.q[s] for s in self.Sigma))
 
     def _add_leaf_constraints(self):
         self.m.leaf_constraints = pyo.ConstraintList()
@@ -316,6 +318,12 @@ class MACH:
             for t in self.Sigma:
                 if (s, t) not in possible_migration_list:
                     self.m.constraints_mig_list.add(self.m.z[s, t] == 0)
+
+    def _constraints_clones_observed(self, clones_observed):
+        self.m.constraints_clones_observed = pyo.ConstraintList()
+        for clone in clones_observed:
+            for clone_sites in clones_observed[clone]:
+                self.m.constraints_clones_observed.add(self.m.l[(clone, 'node'), clone_sites] == 1)
         
     def _count_optimal_solution(self, opt):
         opt._solver_model.params.SolutionNumber = 0
@@ -326,7 +334,7 @@ class MACH:
                 return e
         return opt._solver_model.SolCount
 
-    def solve(self, solver, nSolutions, logfile=None, n_threads=0, raw=False):
+    def solve(self, solver, nSolutions, logfile='', n_threads=0, raw=False):
         if solver == 'gurobi':
             opt = SolverFactory("gurobi", solver_io='python', options={ 'MIPGap': 0, 'PoolSolutions': nSolutions, 'PoolSearchMode': 2, 'threads': n_threads, 'LogToConsole': 0, 'LogFile': logfile})
             opt.solve(self.m, load_solutions=True, tee=True)
@@ -381,7 +389,7 @@ class MACH:
                     if opt._pyomo_var_to_solver_var_map[self.m.r[s]].Xn > 0.5:
                         r.append(s)
                     # print(f'r[{s}] = {opt._pyomo_var_to_solver_var_map[self.m.r[s]].Xn}')
-                solution_raw = {'vertex_multilabeling': ell,
+                solution_raw = {'original_tree': self.phylogeny, 'vertex_multilabeling': ell,
                                 'aug_mig_graph': G, 'n_mig': int(mu), 'n_comig': int(gamma),#}
                                   'other': {'r': r, 'z': z, 'p':p, 'b':b}}
                 if self.seeding_site:
