@@ -87,3 +87,6 @@ class MigrationGraph:
                 f.write(f'\t{node_index[s]} -> {node_index[t]} [penwidth=3,colorscheme=set19,' +
                             f'color="{colormap[s]};0.5:{colormap[t]}"]\n')
             f.write('}\n')
+
+    def open_in_viz(self):
+        pass

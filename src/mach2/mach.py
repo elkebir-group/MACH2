@@ -13,7 +13,8 @@ from . import utils
 
 class MACH:
 
-    def __init__(self, phylogeny, primary_site = None, suboptimal_mode=False, seeding_site=False, specify_migration_comigration=None, possible_migration_list=None, clones_observed=None):
+    def __init__(self, phylogeny, primary_site = None, suboptimal_mode=False, seeding_site=False, 
+                 specify_migration_comigration=None, possible_migration_list=None, clones_observed=None):
         if specify_migration_comigration is not None:
             suboptimal_mode = True
         self.phylogeny = phylogeny
@@ -59,8 +60,8 @@ class MACH:
             self.add_contraints_specifying_mig_comig()
         if possible_migration_list is not None:
             self._add_constraints_2_pick_migrations_4m_given_list(possible_migration_list)
-        if clones_observed is not None:
-            self._constraints_clones_observed(clones_observed)
+        # if clones_observed is not None:
+        #     self._constraints_clones_observed(clones_observed)
 
     def _add_vars(self):
         self.m.l = pyo.Var(self.V, self.Sigma, domain=pyo.Binary)
@@ -319,11 +320,12 @@ class MACH:
                 if (s, t) not in possible_migration_list:
                     self.m.constraints_mig_list.add(self.m.z[s, t] == 0)
 
-    def _constraints_clones_observed(self, clones_observed):
-        self.m.constraints_clones_observed = pyo.ConstraintList()
-        for clone in clones_observed:
-            for clone_sites in clones_observed[clone]:
-                self.m.constraints_clones_observed.add(self.m.l[(clone, 'node'), clone_sites] == 1)
+    # def _constraints_clones_observed(self, clones_observed):
+    #     self.m.constraints_clones_observed = pyo.ConstraintList()
+    #     for clone in clones_observed:
+    #         for clone_sites in self.Sigma:
+    #             if clone_sites not in clones_observed[clone]:
+    #                 self.m.constraints_clones_observed.add(self.m.l[(clone, 'node'), clone_sites] == 0)
         
     def _count_optimal_solution(self, opt):
         opt._solver_model.params.SolutionNumber = 0
@@ -423,6 +425,8 @@ def process_args():
         may be slow (default=False)')
     parser.add_argument('-S', '--seeding_locations', action='store_true', default=False, help='Minimizes the number of seeding locations \
         too (default=False)')
+    parser.add_argument('--viz', '--open_in_viz', action='store_true', default=False, help='Open the locations on MACH2-viz \
+        (default=False)')
 
     return parser.parse_args()
 
@@ -452,7 +456,9 @@ def main():
     solutions = solver.solve('gurobi', args.nsolutions, logfile=logfile, n_threads=args.threads, raw=False)
     total_t = time.time() - start_t
 
-    if args.count_solutions:
+    if args.viz:
+        solutions.open_in_viz()
+    elif args.count_solutions:
         if args.seeding_locations:
             print(f'{primary_str}-\t{int(solutions[0].n_migrations)}\t{int(solutions[0].n_comigrations)}\t{int(solutions[0].n_seeding_locations)}\t\
                 {len(solutions)}')

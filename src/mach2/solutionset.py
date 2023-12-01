@@ -123,33 +123,40 @@ class SolutionSet:
                             f'color="{colormap[st[0]]};0.5:{colormap[st[1]]}"]\n')
             f.write('}\n')
 
+    def json(self, name=''):
+        return {
+                    'name' : name,
+                    'original' : {
+                        'tree': [[u,v] for u,v in self[0].phylogeny.unrefined_phylogeny.tree.edges], 
+                        'labeling': [ [v, self[0].phylogeny.unrefined_phylogeny.get_label(v)] for v in self[0].phylogeny.unrefined_phylogeny.leaves]
+                    },
+                    'solutions' : [
+                        {
+                            'name' : f'T-{i}',
+                            'tree': [[u,v, (solution.phylogeny.timestamps[(u,v)] if (u,v) in solution.phylogeny.timestamps else -1)] for u,v in solution.phylogeny.tree.edges], 
+                            'labeling': [ [v, l['label']] for v, l in solution.phylogeny.tree.nodes.items()], 
+                            'migration': [[u,v, solution.migration_graph.n_migrations(u,v)] for (u,v) in solution.migration_graph.migration_edges()],
+                            'origin_node': [[ i,v ] for i,v in solution.phylogeny.node_of_origin.items()]
+                        } 
+                        for i, solution in enumerate(self)
+                    ],
+                    'summary': [ [u, v, k]  for (u, v), k in self.compute_summary().items()]
+                }
+
     def write_json(self, name='', filename=None):
         if name == '' and filename is not None:
             name = filename.split('.')[0]
-        json_dict = {
-                        'name' : name,
-                        'original' : {
-                            'tree': [[u,v] for u,v in self[0].phylogeny.unrefined_phylogeny.tree.edges], 
-                            'labeling': [ [v, self[0].phylogeny.unrefined_phylogeny.get_label(v)] for v in self[0].phylogeny.unrefined_phylogeny.leaves]
-                        },
-                        'solutions' : [
-                            {
-                                'name' : f'T-{i}',
-                                'tree': [[u,v, (solution.phylogeny.timestamps[(u,v)] if (u,v) in solution.phylogeny.timestamps else -1)] for u,v in solution.phylogeny.tree.edges], 
-                                'labeling': [ [v, l['label']] for v, l in solution.phylogeny.tree.nodes.items()], 
-                                'migration': [[u,v, solution.migration_graph.n_migrations(u,v)] for (u,v) in solution.migration_graph.migration_edges()],
-                                'origin_node': [[ i,v ] for i,v in solution.phylogeny.node_of_origin.items()]
-                            } 
-                            for i, solution in enumerate(self)
-                        ],
-                        'summary': [ [u, v, k]  for (u, v), k in self.compute_summary().items()]
-                    }
+        json_dict = self.json(name)
         import json
         if filename is None:
             return json.dumps(json_dict, indent=4)
         else:
             with open(filename, 'w+') as out:
                 json.dump(json_dict, out)
+
+    def open_in_viz(self):
+        from mach2viz import viz
+        viz.Viz(solution=self.json('test')).run()
 
     # def summary_write(self, filename, primary=None):
     #     if primary is None:
