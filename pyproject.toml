@@ -22,7 +22,8 @@ dependencies = [
     'pandas',
     'pyomo',
     'networkx',
-    'gurobipy'
+    'gurobipy',
+    'mach2-viz'
 ]
 
 [project.optional-dependencies]
