@@ -4,7 +4,6 @@ def process_colormap_file(colormap_file):
         for line in f:
             site, color = line.split()
             colormap[site] = color
-
     return colormap
 
 def get_colormap(locations):

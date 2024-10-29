@@ -8,7 +8,7 @@ A mathematical framework for inferring migration histories of metastatic cancer 
         - [Prerequisite](#prerequisite)  
         - [Install using `pip`](#install-using-pip)
 2. [Usage instruction](#usage-instruction)  
-        - [I/O formats](#i-o-formats)  
+        - [I/O formats](#i-o-formats)
         - [Input](#input)  
         - [Output](#output)  
         - [Usage](#usage)  
@@ -18,7 +18,7 @@ A mathematical framework for inferring migration histories of metastatic cancer 
 ### Prerequisites
 
 - **Python** - `MACH2` requires Python 3.7 or newer.
-- **ILP solver** - `MACH2` requires an ILP solver installed to solve **PMH-TR**. Currently `MACH2` only supports `Gurobi optimizer`, but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) and `DYLD_LIBRARY_PATH` (macOS) the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
+- **ILP solver** - `MACH2` requires an ILP solver installed to solve **PMH-TR**. Currently `MACH2` only supports `Gurobi optimizer`, but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS) the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
 
 ### Install using `pip`
 

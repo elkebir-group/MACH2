@@ -1,0 +1,12 @@
+grey	prostate
+dark_purple	left_cervical_lymph_node
+mid_blue	left_subclavicular_lymph_node	prostate
+mid_green	left_subclavicular_lymph_node
+light_blue	right_humerus
+orange	right_humerus	prostate	right_rib_8
+dark_pink	left_cervical_lymph_node
+dark_green	prostate	right_rib_8
+blueF	right_humerus
+pinkC	prostate
+goldD	left_cervical_lymph_node
+light_brownE	left_subclavicular_lymph_node

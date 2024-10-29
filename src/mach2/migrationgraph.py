@@ -1,92 +1,60 @@
 import networkx as nx
+from collections import Counter
 from . import utils
 
 class MigrationGraph:
 
-    def __init__(self, raw):
-        G_raw = raw['aug_mig_graph']
-        self.graph = nx.MultiDiGraph()
-        for i in G_raw.values():
-            for s, t in i:
-                if s != t:
-                    self.graph.add_edge(s, t)
-        self.locations = [i for i in self.graph.nodes]
-        self.n_mig = raw['n_mig']
-        self.n_comig = raw['n_comig']
-        if 'n_seedinglocations' in raw:
-            self.n_seedinglocations = raw['n_seedinglocations']
-        self.colormap = raw['original_tree'].colormap
-
+    def __init__(self, refinement):
+        self.refinement = refinement
+        self._graph = nx.MultiDiGraph()
+        for u, v in refinement.edges:
+            if refinement.get_label(u) != refinement.get_label(v):
+                self._graph.add_edge(refinement.get_label(u), refinement.get_label(v))
 
     def has_migration(self, a, b):
-        return self.graph.number_of_edges(a,b) > 0
+        return self._graph.number_of_edges(a,b) > 0
     
     def n_migrations(self, a, b):
-        return self.graph.number_of_edges(a,b)
+        return self._graph.number_of_edges(a,b)
     
-    def migration_edges(self):
-        G_digraph = nx.DiGraph(self.graph)
+    def get_each_migration(self):
+        return Counter([(s, t) for s, t, _ in self._graph.edges])
+    
+    def get_migrations(self):
+        G_digraph = nx.DiGraph(self._graph)
         for u, v in G_digraph.edges:
             yield u, v
     
     def migration_pattern(self):
-        G_digraph = nx.DiGraph(self.graph)
+        G_digraph = nx.DiGraph(self._graph)
         clonality = 'm'
         for edge in G_digraph.edges:
-            if self.graph.n_migrations(edge[0], edge[1]) > 1:
+            if self.n_migrations(edge[0], edge[1]) > 1:
                 clonality = 'p'
                 break
         if nx.is_tree(G_digraph):
             return clonality, 'S'
         elif nx.is_directed_acyclic_graph(G_digraph):
-            return clonality, 'M'
+            return 'p', 'M'
         else:
-            return clonality, 'R'
+            return 'p', 'R'
     
     def write_graph(self, filename):
-        G_digraph = nx.DiGraph(self.graph)
-        with open(filename, 'w+') as f:
+        G_digraph = nx.DiGraph(self._graph)
+        with open(filename, 'w') as f:
             for edge in G_digraph.edges:
-                f.write(f'{edge[0]} {edge[1]} {self.graph.number_of_edges(edge[0], edge[1])}\n')
+                f.write(f'{edge[0]}\t{edge[1]}\t{self._graph.number_of_edges(edge[0], edge[1])}\n')
 
-    def draw(self, colormap=None, colormap_file=None):
+    def draw(self):
         import graphviz as gv
-        if colormap is None:
-            if colormap_file is None:
-                if self.colormap is None:
-                    colormap = utils.get_colormap(self.locations)
-                else:
-                    colormap = self.colormap
-            else:
-                colormap = utils.process_colormap_file(colormap_file)
+        colormap = self.refinement.unrefined_tree._colormap
         g = gv.Digraph(node_attr={'shape': 'box', 'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={'penwidth': '3', 'colorscheme': 'set19'})
-        for s in self.graph.nodes:
+        for s in self._graph.nodes:
             g.node(s, color=str(colormap[s]))
-        for s, t, _ in self.graph.edges:
-            g.edge(s, t, color=f"{colormap[s]};0.5:{colormap[t]}")
+        for s, t, _ in self._graph.edges:
+            if s != t:
+                g.edge(s, t, color=f"{colormap[s]};0.5:{colormap[t]}")
         return g
     
     def _repr_mimebundle_(self, include=None, exclude=None, **_):
         return self.draw()._repr_mimebundle_(include=include, exclude=exclude)
-
-    def write_dot(self, filename, colormap=None, colormap_file=None):
-        if colormap is None:
-            if colormap_file is None:
-                if self.colormap is None:
-                    colormap = utils.get_colormap(self.locations)
-                else:
-                    colormap = self.colormap
-            else:
-                colormap = utils.process_colormap_file(colormap_file)
-        node_index = {j:i for i,j in enumerate(self.graph.nodes)}
-        with open(filename, 'w+') as f:
-            f.write('digraph G {\n')
-            for s in self.graph.nodes:
-                f.write(f'\t{node_index[s]} [shape=box,penwidth=3,colorscheme=set19,color={colormap[s]},' + f'label="{s}"]\n')
-            for s, t, _ in self.graph.edges:
-                f.write(f'\t{node_index[s]} -> {node_index[t]} [penwidth=3,colorscheme=set19,' +
-                            f'color="{colormap[s]};0.5:{colormap[t]}"]\n')
-            f.write('}\n')
-
-    def open_in_viz(self):
-        pass

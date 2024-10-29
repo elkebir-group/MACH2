@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "mach2"
-version = "0.0.4"
+version = "1.0.0"
 authors = [
   { name="Mrinmoy Saha Roddur", email="mroddur2@illinois.edu" },
 ]
@@ -20,20 +20,15 @@ classifiers = [
 keywords = ["Computational biology", "Bioinformatics", "Cancer", "Metastasis", "Phylogeny"]
 dependencies = [
     'pandas',
-    'pyomo',
     'networkx',
     'gurobipy',
-    'mach2-viz'
-]
-
-[project.optional-dependencies]
-jupyter = [
     "jupyterlab",
     "graphviz",
+    "mach2viz"
 ]
 
 [project.scripts]
-mach2 = "mach2.mach:main"
+mach2 = "mach2.__main__:main"
 
 [project.urls]
 "Homepage" = "https://github.com/elkebir-group/MACH2"

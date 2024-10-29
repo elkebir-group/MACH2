@@ -1,5 +1,3 @@
+.ipynb_checkpoints/*
+.pdm-build/*
 src/mach2/__pycache__
-build
-dist
-.ipynb_checkpoints
-token.txt

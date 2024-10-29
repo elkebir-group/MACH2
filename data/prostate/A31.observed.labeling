@@ -1,0 +1,10 @@
+grey	left_adrenal_gland
+mid_green	prostate
+dark_purple	right_rib_7	right_inguinal_lymph_node	prostate	left_adrenal_gland
+orange	right_subdural	right_inguinal_lymph_node	prostate	left_adrenal_gland	right_rib_7
+dark_green	right_rib_7	right_subdural
+light_blue	right_rib_7	right_inguinal_lymph_node
+dark_pinkC	prostate
+light_brownE	left_adrenal_gland
+blueD	right_inguinal_lymph_node
+goldA	right_subdural

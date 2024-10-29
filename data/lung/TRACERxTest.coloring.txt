@@ -1,0 +1,8 @@
+p.lung 1
+p.lymphnode1 2
+relapse1 3
+lung1 4
+bone1 5
+lung2 6
+lung3 7
+lung4 8
