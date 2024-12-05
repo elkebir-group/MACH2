@@ -130,22 +130,3 @@ class SolutionSet:
     def open_in_viz(self):
         from mach2viz import viz
         viz.Viz(solution=self.json('test')).run()
-
-    # def summary_write(self, filename, primary=None):
-    #     if primary is None:
-    #         sol_set = self.solution_set_whole
-    #     else:
-    #         sol_set = self.solution_set[primary]
-    #     summary_graph = defaultdict(int)
-    #     locations = set()
-    #     max_val = 0
-    #     for solution in sol_set:
-    #         for u1, v1 in solution.migration_graph.migration_edges():
-    #             summary_graph[(u1, v1)] += 1
-    #             if max_val < summary_graph[(u1, v1)]:
-    #                 max_val = summary_graph[(u1, v1)]
-    #             locations.update([u1, v1])
-
-    #     with open(filename, 'w+') as f:
-    #         for st in summary_graph:
-    #             f.write(f'{st[0]}\t{st[1]}\t{summary_graph[st] * 5/max_val}\n')
