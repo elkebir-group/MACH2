@@ -8,10 +8,10 @@ A mathematical framework for inferring migration histories of metastatic cancer 
         - [Prerequisite](#prerequisite)  
         - [Install using `pip`](#install-using-pip)
 2. [Usage instruction](#usage-instruction)  
-        - [I/O formats](#i-o-formats)
-        - [Input](#input)  
-        - [Output](#output)  
-        - [Usage](#usage)  
+        - [From `JupyterLab`](#from-jupyterlab)  
+        - [From Command Line](#from-command-line)
+                - [I/O formats](#i-o-formats)   
+                - [Usage](#usage)  
 
 ## 1. Installation
 
@@ -100,14 +100,13 @@ We describe various formats used by `MACH2`.
         
 Additionaly, `MACH2` can output files in Graphviz DOT format or JSON format.
 
-#### Input
+#### Usage
 
 `MACH2` takes as input two files - 
 
 1. **Tree file** : Tree file describing the input clone tree.
 2. **Observed labeling file** : Labeling file describing the observed labeling of input clone tree.
 
-#### Output
 
 For each solution, `MACH2` can output three types of files.
 
@@ -118,8 +117,6 @@ For each solution, `MACH2` can output three types of files.
 Additionaly `MACH2` can return JSON file encoding all the solutions. The JSON file can be directly passed to [MACH2-viz](https://github.com/elkebir-group/mach2-viz). The exact format of the JSON file is described [here](https://github.com/elkebir-group/mach2-viz/README.md).
 
 `MACH2` also prints `<primary location> <number of migrations> <number of comigrations> Optimal <running time (in seconds)>` on console.
-
-#### Usage
 
 `MACH2` can be run using python.
 
