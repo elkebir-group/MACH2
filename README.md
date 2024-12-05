@@ -33,35 +33,7 @@ If you want to use `MACH2` with `JupyterLab`, you'll need additional dependencie
 
 ## Usage Instruction
 
-`MACH2` Can be run using command line, or can be directly accessed from `JupyterLab`.
-
-### From JupyterLab
-
-The following code snippet imports `MACH2`, runs it, and saves the solutions to a variable `solutions`.
-
-
-                import mach2
-                tree = mach2.MultiLabeledTree.from_files('input.tree', 'input.observed.labeling')
-                solutions = mach2.MACH2(tree, primary_location='primary', criteria_ordering='UMC').solve()
-                print(len(solutions))
-                solutions.summary()
-
-
-`solutions` is a `SolutionSet` object that behaves as a set. `print(len(solutions))` prints the number of retrived solutions.
-The last line draws the summary graph for `solutions.
-It is possible to inspect individual solutions too.
-
-
-                solution1 = [sol for sol in solutions][0]
-                solution1.draw()
-                solution1.migration_graph().draw()
-
-The second line draws the tree with node labeling, and the third line draws the corresponding migration graph.
-
-
-### From Command Line
-
-#### I/O formats
+### I/O formats
 
 We describe various formats used by `MACH2`.
 
@@ -100,12 +72,42 @@ We describe various formats used by `MACH2`.
         
 Additionaly, `MACH2` can output files in Graphviz DOT format or JSON format.
 
-#### Usage
+### Usage
 
 `MACH2` takes as input two files - 
 
 1. **Tree file** : Tree file describing the input clone tree.
 2. **Observed labeling file** : Labeling file describing the observed labeling of input clone tree.
+
+
+`MACH2` Can be run using command line, or can be directly accessed from `JupyterLab`.
+
+#### From JupyterLab
+
+The following code snippet imports `MACH2`, runs it for input tree file `input.tree` and input observed labeling file `input.observed.labeling`, and saves the solutions to a variable `solutions`.
+
+
+                import mach2
+                tree = mach2.MultiLabeledTree.from_files('input.tree', 'input.observed.labeling')
+                solutions = mach2.MACH2(tree, primary_location='primary', criteria_ordering='UMC').solve()
+                print(len(solutions))
+                solutions.summary()
+
+
+`solutions` is a `SolutionSet` object that behaves as a set. `print(len(solutions))` prints the number of retrived solutions.
+The last line draws the summary graph for `solutions.
+It is possible to inspect individual solutions too.
+
+
+                solution1 = [sol for sol in solutions][0]
+                solution1.draw()
+                solution1.migration_graph().draw()
+
+The second line draws the tree with node labeling, and the third line draws the corresponding migration graph.
+For more details, check the documentation for each function.
+
+
+#### From Command Line
 
 
 For each solution, `MACH2` can output three types of files.
