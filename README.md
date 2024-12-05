@@ -9,9 +9,9 @@ A mathematical framework for inferring migration histories of metastatic cancer 
         - [Install using `pip`](#install-using-pip)
 2. [Usage instruction](#usage-instruction)  
         - [From `JupyterLab`](#from-jupyterlab)  
-        - [From Command Line](#from-command-line)
-                - [I/O formats](#i-o-formats)   
-                - [Usage](#usage)  
+        - [From Command Line](#from-command-line)  
+                <!-- - [I/O formats](#i-o-formats)   
+                - [Usage](#usage)   -->
 
 ## 1. Installation
 
