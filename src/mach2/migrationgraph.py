@@ -24,6 +24,9 @@ class MigrationGraph:
         G_digraph = nx.DiGraph(self._graph)
         for u, v in G_digraph.edges:
             yield u, v
+
+    def get_seeding_locations(self):
+        return set([u for u, _ in self.get_migrations()])
     
     def migration_pattern(self):
         G_digraph = nx.DiGraph(self._graph)

@@ -154,13 +154,13 @@ class MACH2:
                 for t in self.S:
                     self.m.addConstr( self.g[s, t, v, 'node'] + self.g[t, s, v, 'node'] <= 1 )
 
-        if criteria_ordering[0] == 'M' or criteria_ordering[:2] == 'UM':
+        if criteria_ordering[0] == 'M':
             for v in self.V:
                 sum1 = 0
                 for s in self.S:
                     if s not in self.tree.get_labels(v):
                         sum1 += self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node')
-                        if v == self.tree.root:
+                        if v == self.tree.root  and primary_location != s:
                             sum1 += self.r[s]
                 if len(self.tree.get_children(v)) < 3:
                     self.m.addConstr( sum1 <= 1 )
@@ -181,7 +181,7 @@ class MACH2:
                     sum1 = 0
                     for s in self.S:
                         sum1 += self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node')
-                        if v == self.tree.root and primary_location != s:
+                        if v == self.tree.root:
                             sum1 += self.r[s]
                     self.m.addConstr( sum1 == 1 )
 

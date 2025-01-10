@@ -50,6 +50,10 @@ class SolutionSet:
             min_val = min([sorter(sol, criteria_ordering) for sol in self.solution_set])
             return SolutionSet([sol for sol in self.solution_set if sorter(sol, criteria_ordering) == min_val], check=False)
 
+    def seeding_location_filter(self):
+        min_val = min([len(sol.migration_graph().get_seeding_locations()) for sol in self])
+        return SolutionSet([sol for sol in self if len(sol.migration_graph().get_seeding_locations()) == min_val])
+
 
     # def co_occurence_table(self):
     #     table = defaultdict(lambda: defaultdict(int))
