@@ -20,7 +20,7 @@ A mathematical framework for inferring migration histories of metastatic cancer 
 - **Python** - `MACH2` requires Python 3.7 or newer.
 - **ILP solver** - `MACH2` requires an ILP solver installed to solve **PMH-TR**. Currently `MACH2` only supports `Gurobi optimizer`, but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS) the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
 
-### Install using `pip`
+<!-- ### Install using `pip`
 
 `MACH2` can easily be installed using `pip`, the package installer for Python. Open a terminal or command prompt and run the following command:
 
@@ -28,8 +28,27 @@ A mathematical framework for inferring migration histories of metastatic cancer 
 
 If you want to use `MACH2` with `JupyterLab`, you'll need additional dependencies. To install these optional dependencies, you can run the following command:
 
-                $ pip install mach2[jupyter]
+                $ pip install mach2[jupyter] 
 
+PyPI version is currently broken. We'll update it ASAP.-->
+
+### Install using `conda`
+
+`MACH2` can be installed using `conda`. We advise to create a new environment in `conda`. If creating a new environment, dependencies can be installed simultaneously.
+
+                $ conda create -n mach2 python=3 pandas networkx gurobi jupyterlab graphviz pygraphviz -c conda-forge -c gur
+obi
+                $ conda activate mach2
+
+If using existing conda environment, the following command installs the dependencies.
+
+                $ conda install -c conda-forge -c gurobi pandas networkx gurobi jupyterlab graphviz pygraphviz
+
+Next, we install `MACH2`. To that end, we download `MACH2` repository from GitHub and install it.
+
+                $ git clone https://github.com/elkebir-group/MACH2.git
+                $ cd MACH2
+                $ pip install . --no-deps
 
 ## Usage Instruction
 
@@ -107,7 +126,7 @@ The second line draws the tree with node labeling, and the third line draws the 
 For more details, check the documentation for each function.
 
 
-#### From Command Line
+#### From Terminal
 
 
 For each solution, `MACH2` can output three types of files.
@@ -122,34 +141,35 @@ Additionaly `MACH2` can return JSON file encoding all the solutions. The JSON fi
 
 `MACH2` can be run using python.
 
-                usage: mach2 [-h] [-p PRIMARY] [-c COLORMAP] [--log] [-o OUTPUT] [-N NSOLUTIONS] [-C] [-t THREADS] [-s] [-S] clone_tree leaf_labeling
+                usage: mach2 [-h] [-c CRITERIA] [-s] [-p PRIMARY] [--colormap COLORMAP] [--log] [-o OUTPUT] [--max_solutions MAX_SOLUTIONS] [-t THREADS] [--viz]
+                        clonal_tree observed_labeling
 
                 MACH2
 
                 positional arguments:
-                clone_tree            Input clone tree
-                leaf_labeling         Input leaf labeling
+                clonal_tree           Input clonal tree
+                observed_labeling     Input observed labeling
 
-                options:
+                optional arguments:
                 -h, --help            show this help message and exit
+                -c CRITERIA, --criteria CRITERIA
+                                        Criteria ordering
+                -s, --seeding_locations
+                                        Prioritize solutions with the least number of seeding locations (default=False)
                 -p PRIMARY, --primary PRIMARY
-                                        Primary anatomical site
-                -c COLORMAP, --colormap COLORMAP
-                                        Color map file
-                --log                 Outputs Gurobi logging
+                                        Primary anatomical location
+                --colormap COLORMAP   Color map file
+                --log                 Outputs Gurobi logging (default=False)
                 -o OUTPUT, --output OUTPUT
-                                        Output folder
-                -N NSOLUTIONS, --nsolutions NSOLUTIONS
-                                        Maximum number of solutions retained
-                -C, --count_solutions
-                                        Only prints the number of solutions (default=False)
+                                        Output folder (default=current folder)
+                --max_solutions MAX_SOLUTIONS
+                                        Maximum number of solutions retained (default=37888)
                 -t THREADS, --threads THREADS
                                         Number of threads
-                -s, --suboptimal      Returns suboptimal solutions without duplicates, may be slow (default=False)
-                -S, --seeding_sites   Minimizes the number of seeding sites too (default=False)
+                --viz, --open_in_viz  Open the locations on MACH2-viz (default=False) 
 
 An example execution
 
-        $ mach2 data/mcpherson_2016/patient1.tree data/mcpherson_2016/patient1.labeling -c data/mcpherson_2016/coloring.txt
+        $ mach2 data/ovarian/patient2.tree data/ovarian/patient2.observed.labeling --colormap data/ovarian/coloring.txt
         
 

@@ -7,7 +7,19 @@ name = "mach2"
 version = "1.0.0"
 authors = [
   { name="Mrinmoy Saha Roddur", email="mroddur2@illinois.edu" },
+  { name="Vikram Ramavarapu", email="vikramr2@illinois.edu" },
+  { name="Abigail Bunkum", email="abigail.bunkum.21@ucl.ac.uk" },
+  { name="Ariana Huebner,", email="ariana.huebner.16@ucl.ac.uk" },
+  { name="Roman Minyev", email="mineyev2@illinois.edu" },
+  { name="Nicholas McGranahan,", email="nicholas.mcgranahan.10@ucl.ac.uk" },
+  { name="Simone Zaccaria,", email="s.zaccaria@ucl.ac.uk" },
+  { name="Mohammed El-Kebir", email="melkebir@illinois.edu" },
 ]
+
+maintainers = [
+  { name="Mrinmoy Saha Roddur", email="mroddur2@illinois.edu" },
+]
+
 description = "Migration Analysis of Clonal History 2"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -33,3 +45,4 @@ mach2 = "mach2.__main__:main"
 [project.urls]
 "Homepage" = "https://github.com/elkebir-group/MACH2"
 "Bug Tracker" = "https://github.com/elkebir-group/MACH2/issues"
+"Preprint" = "https://www.biorxiv.org/content/10.1101/2024.11.19.624301v2"

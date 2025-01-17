@@ -49,6 +49,8 @@ class SolutionSet:
             sorter = lambda ref, co: tuple(sort_key_map[letter](ref) for letter in co)
             min_val = min([sorter(sol, criteria_ordering) for sol in self.solution_set])
             return SolutionSet([sol for sol in self.solution_set if sorter(sol, criteria_ordering) == min_val], check=False)
+        else:
+            return self
 
     def seeding_location_filter(self):
         min_val = min([len(sol.migration_graph().get_seeding_locations()) for sol in self])

@@ -383,7 +383,7 @@ class Refinement(Tree):
         self.write_labeling(filename_prefix+'.location.labeling')
         self.write_node_of_origin(filename_prefix+'.nodes')
 
-    def draw(self):
+    def draw(self, filename=None):
         import graphviz as gv
         colormap = self.unrefined_tree._colormap
         t = gv.Digraph(node_attr={'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={
@@ -401,4 +401,6 @@ class Refinement(Tree):
                 t.edge( i, j, color=f"{colormap[self.get_label(i)]};0.5:{colormap[self.get_label(j)]}", label=f'  {self.timestamps[(i,j)]}')
             else:
                 t.edge( i, j, color=f"{colormap[self.get_label(i)]};0.5:{colormap[self.get_label(j)]}")
+        if filename is not None:
+            t.render(filename)
         return t

@@ -48,7 +48,7 @@ class MigrationGraph:
             for edge in G_digraph.edges:
                 f.write(f'{edge[0]}\t{edge[1]}\t{self._graph.number_of_edges(edge[0], edge[1])}\n')
 
-    def draw(self):
+    def draw(self, filename=None):
         import graphviz as gv
         colormap = self.refinement.unrefined_tree._colormap
         g = gv.Digraph(node_attr={'shape': 'box', 'penwidth': '3', 'colorscheme': 'set19'}, edge_attr={'penwidth': '3', 'colorscheme': 'set19'})
@@ -57,6 +57,8 @@ class MigrationGraph:
         for s, t, _ in self._graph.edges:
             if s != t:
                 g.edge(s, t, color=f"{colormap[s]};0.5:{colormap[t]}")
+        if filename is not None:
+            g.render(filename)
         return g
     
     def _repr_mimebundle_(self, include=None, exclude=None, **_):

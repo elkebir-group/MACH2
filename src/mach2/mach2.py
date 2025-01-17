@@ -1,7 +1,3 @@
-# import os
-# import argparse
-# import time
-# from collections import defaultdict
 import gurobipy as gp
 from gurobipy import GRB
 from collections import defaultdict
@@ -10,7 +6,7 @@ from .solutionset import SolutionSet
 
 
 class MACH2:
-    def __init__(self, clone_tree, primary_location=None, criteria_ordering='MUC', suboptimal_mode=None):
+    def __init__(self, clone_tree, primary_location=None, criteria_ordering='UMC', suboptimal_mode=None):
 
         self.tree = clone_tree
         self.S = clone_tree.locations
