@@ -36,8 +36,7 @@ PyPI version is currently broken. We'll update it ASAP.-->
 
 `MACH2` can be installed using `conda`. We advise to create a new environment in `conda`. If creating a new environment, dependencies can be installed simultaneously.
 
-                $ conda create -n mach2 python=3 pandas networkx gurobi jupyterlab graphviz pygraphviz -c conda-forge -c gur
-obi
+                $ conda create -n mach2 python=3 pandas networkx gurobi jupyterlab graphviz pygraphviz -c conda-forge -c gurobi
                 $ conda activate mach2
 
 If using existing conda environment, the following command installs the dependencies.
