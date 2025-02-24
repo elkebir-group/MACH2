@@ -6,7 +6,7 @@ from .solutionset import SolutionSet
 
 
 class MACH2:
-    def __init__(self, clone_tree, primary_location=None, criteria_ordering='UMC', suboptimal_mode=None):
+    def __init__(self, clone_tree, primary_location=None, criteria_ordering='UMC'):
 
         self.tree = clone_tree
         self.S = clone_tree.locations
@@ -29,34 +29,44 @@ class MACH2:
         self.r = self.m.addVars(self.S, vtype=GRB.BINARY, lb=0, ub=1)
         self.a = self.m.addVars(self.S, self.S, self.V, vtype=GRB.CONTINUOUS, lb=0, ub=1)
         self.b = self.m.addVars(self.S, self.S, self.V, vtype=GRB.CONTINUOUS, lb=0, ub=1)
-        if criteria_ordering[0] == 'C':
-            self.z = self.m.addVars(self.S, self.S, vtype=GRB.CONTINUOUS, lb=0, ub=1)
+        if 'C' in criteria_ordering:
+            self.c = self.m.addVars(self.S, self.S, self.E, vtype=GRB.CONTINUOUS, lb=0, ub=1)
+            self.d = self.m.addVars(self.S, self.S, [(s, u) for u in self.V for s in self.tree.get_labels(u)], vtype=GRB.CONTINUOUS, lb=0, ub=1)
+            self.z = self.m.addVars(self.S, self.S, vtype=GRB.CONTINUOUS, lb=0)
+        if 'S' in criteria_ordering:
+            self.s = self.m.addVars(self.S, vtype=GRB.BINARY, lb=0, ub=1)
 
     def _add_optimization_function(self, criteria_ordering):
-        sum1 = 0
-        for s in self.S:
-            for t in self.S:
-                if s != t:
-                    sum1 += self.g.sum(s, t, '*', '*')
-        sum2 = 0
-        max_unobserved_clones = 0
-        for v in self.V:
+        pscores = {}
+        if 'U' in criteria_ordering:
+            pscores['U'] = 0
+            max_unobserved_clones = 0
+            for v in self.V:
+                for s in self.S:
+                    if s not in self.tree.get_labels(v):
+                        max_unobserved_clones += 1
+                        pscores['U'] += self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node')
+                        if v == self.tree.root:
+                            pscores['U'] += self.r[s]
+        if 'M' in criteria_ordering:
+            pscores['M'] = 0
             for s in self.S:
-                if s not in self.tree.get_labels(v):
-                    max_unobserved_clones += 1
-                    sum2 += self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node')
-                    if v == self.tree.root:
-                        sum2 += self.r[s]
-        if criteria_ordering in ['MU', 'MUC', 'CMU']:
-            self.m.setObjective((max_unobserved_clones + 1) * sum1 + sum2, GRB.MINIMIZE)
-        elif criteria_ordering in ['UM', 'UMC', 'CUM']:
-            self.m.setObjective((len(self.E) + len(self.V) * (len(self.S) - 1)) * sum2 + sum1, GRB.MINIMIZE)
-        elif criteria_ordering in ['M', 'MC', 'CM', 'MCU']:
-            self.m.setObjective(sum1, GRB.MINIMIZE)
-        elif criteria_ordering in ['U', 'UC', 'CU', 'UCM']:
-            self.m.setObjective(sum2, GRB.MINIMIZE)
-        else:
-            self.m.setObjective(1, GRB.MINIMIZE)
+                for t in self.S:
+                    if s != t:
+                        pscores['M'] += self.g.sum(s, t, '*', '*')
+        if 'C' in criteria_ordering:
+            pscores['C'] = self.z.sum()
+        if 'S' in criteria_ordering:
+            pscores['S'] = self.s.sum()
+        score = 0
+        for c in criteria_ordering:
+            if c == 'U':
+                score = score * (max_unobserved_clones + 1) + pscores[c]
+            elif c == 'M' or c == 'C':
+                score = score * (len(self.E) + len(self.V) * (len(self.S) - 1)) + pscores[c]
+            elif c == 'S':
+                score = score * len(self.S) + pscores[c]
+        self.m.setObjective(score, GRB.MINIMIZE)
 
     def _add_constraints(self, criteria_ordering):
         # there is exactly one primary location
@@ -131,17 +141,38 @@ class MACH2:
                 for s in self.S:
                     if s not in self.tree.get_labels(v):
                         self.m.addConstr( self.g.sum(s, '*', v, '*') >= self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node') )
-
-        if criteria_ordering[0] == 'C':
+        
+        if 'C' in criteria_ordering:
             for s in self.S:
-                self.m.addConstr( self.z[s,s] == 0)
-                self.m.addConstr( self.z.sum('*', s) <= 1 - self.r[s] )
                 for t in self.S:
-                    if t != s:
-                        for v in self.V:
-                            self.m.addConstr( self.z[s, t] >= self.g[s, t, v, 'node'] )
-                        for u, v in self.E:
-                            self.m.addConstr( self.z[s, t] >= self.g[s, t, u, v] )
+                    for (u,v) in self.E:
+                        self.m.addConstr( self.c[s, t, u, v] >= self.g[s, t, u, v])
+                        self.m.addConstr( self.c[s, t, u, v] >= self.g[s, t, u, 'node'] + self.g.sum(t, '*', u, v)  - 1 )
+                        self.m.addConstr( self.c[s, t, u, v] <= self.g[s, t, u, v] + self.g[s, t, u, 'node'] )
+                        self.m.addConstr( self.c[s, t, u, v] <= self.g[s, t, u, v] + self.g.sum(t, '*', u, v) )
+                    for u in self.V:
+                        sum1 = 0
+                        for (u1, v1) in self.tree.paths[u]:
+                            sum1 += self.c[s, t, u1, v1]
+                        for sp in self.tree.get_labels(u):
+                            if t == sp:
+                                self.m.addConstr( self.d[s, t, sp, u] == self.g[s, t, u, 'node'] )
+                            else:
+                                self.m.addConstr( self.d[s, t, sp, u] <= self.g[s, t, u, 'node'] )
+                                self.m.addConstr( self.d[s, t, sp, u] <= self.a[t, sp, u] )
+                                self.m.addConstr( self.d[s, t, sp, u] >= self.g[s, t, u, 'node'] + self.a[t, sp, u] - 1 )
+                            if s == t:
+                                self.m.addConstr( self.z[s, t] == 0 )
+                            else:
+                                self.m.addConstr( self.z[s, t] >= sum1 + self.d[s, t, sp, u] )
+        
+        if 'S' in criteria_ordering:
+            for u, v in [(v, 'node') for v in self.V] + self.E:
+                for s in self.S:
+                    for t in self.S:
+                        if s != t:
+                            self.m.addConstr( self.s[s] >= self.g[s, t, u, v] )
+
 
     def _add_speedup_constraints(self, criteria_ordering, primary_location=None):
         for v in self.V:
@@ -149,19 +180,6 @@ class MACH2:
                 self.m.addConstr( self.g[s, s, v, 'node'] == 0 )
                 for t in self.S:
                     self.m.addConstr( self.g[s, t, v, 'node'] + self.g[t, s, v, 'node'] <= 1 )
-
-        if criteria_ordering[0] == 'M':
-            for v in self.V:
-                sum1 = 0
-                for s in self.S:
-                    if s not in self.tree.get_labels(v):
-                        sum1 += self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node')
-                        if v == self.tree.root  and primary_location != s:
-                            sum1 += self.r[s]
-                if len(self.tree.get_children(v)) < 3:
-                    self.m.addConstr( sum1 <= 1 )
-                else:
-                    self.m.addConstr( sum1 <= len(self.tree.get_children(v)) - 1 )
 
         if criteria_ordering[0] == 'U':
             for v in self.V:
@@ -180,6 +198,28 @@ class MACH2:
                         if v == self.tree.root:
                             sum1 += self.r[s]
                     self.m.addConstr( sum1 == 1 )
+
+        if criteria_ordering[0] == 'M':
+            for v in self.V:
+                sum1 = 0
+                for s in self.S:
+                    if s not in self.tree.get_labels(v):
+                        sum1 += self.g.sum('*', s, '*', v) + self.g.sum('*', s, v, 'node')
+                        if v == self.tree.root  and primary_location != s:
+                            sum1 += self.r[s]
+                if len(self.tree.get_children(v)) < 3:
+                    self.m.addConstr( sum1 <= 1 )
+                else:
+                    self.m.addConstr( sum1 <= len(self.tree.get_children(v)) - 1 )
+
+        if criteria_ordering[0] == 'C':
+            for s in self.S:
+                for t in self.S:
+                    self.m.addConstr(self.z[s, t] <= 1)
+            self.m.addConstr( self.z.sum() == len(self.S) - 1 )
+
+        if criteria_ordering[0] == 'S':
+            self.m.addConstr(self.s.sum() == 1)
 
 
     def _add_primary_location_constraint(self, primary_location):
@@ -213,7 +253,7 @@ class MACH2:
             else:
                 starting_nsols *= 2
                 self.m.reset(1)
-
+        # print(n)
         Rs = []
         for e in range(n):
             R = defaultdict(list)
@@ -227,5 +267,34 @@ class MACH2:
                         if self.g[s, t, u, v].Xn > 0.5:
                             R[(u,v)].append((s,t))
             Rs.append(R)
+            # if e == 0:
+            #     for s in self.S:
+            #         for t in self.S:
+            #             if self.z[s, t].Xn > 0.5:
+            #                 print('z', s, t, self.z[s, t].Xn)
+            #     for s in self.S:
+            #         for t in self.S:
+            #             for u, v in self.E:
+            #                 if self.c[s, t, u, v].Xn > 0.5:
+            #                     print('c', s, t, u, v, self.c[s, t, u, v].Xn)
+            #     for s in self.S:
+            #         for t in self.S:
+            #             for u in self.V:
+            #                 for sp in self.tree.get_labels(u):
+            #                     if self.d[s, t, sp, u].Xn > 0.5:
+            #                         print('d', s, t, sp, u, self.d[s, t, sp, u].Xn)
         
-        return SolutionSet([Refinement.from_refinement_graph(self.tree, R) for R in Rs]).filter(criteria_ordering=self.criteria_ordering)
+        solset = SolutionSet([Refinement.from_refinement_graph(self.tree, R) for R in Rs])
+        if 'C' in self.criteria_ordering:
+            inferred_comigs = sum([self.z[s,t].X for s in self.S for t in self.S])
+            actual_comigs = [s.n_comigrations() for s in solset]
+            if inferred_comigs == max(actual_comigs):
+                return solset
+            elif inferred_comigs == min(actual_comigs):
+                return solset.filter(self.criteria_ordering)
+            elif min(actual_comigs) - inferred_comigs < 2:
+                return solset.filter(self.criteria_ordering)
+            else:
+                raise ValueError("Super exceptional case detected. Please open a GitHub issue in MACH2 repository.")
+        else:
+            return solset

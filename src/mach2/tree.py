@@ -22,7 +22,7 @@ class Tree:
 
         self.paths = {}
         self.max_height = 0
-        for u in self.leaves:
+        for u in self.nodes:
             self.paths[u] = []
             path_u = nx.shortest_path(self._tree, self.root, u)
             for ii in range(len(path_u) - 1):
@@ -42,7 +42,7 @@ class Tree:
     def from_file(filename):
         with open(filename, 'r') as f:
             edges = []
-            for edge in f:
+            for edge in f.readlines():
                 try:
                     a, b = edge.split()
                 except:
@@ -198,8 +198,8 @@ class Refinement(Tree):
         if node_of_origin is None:
             node_of_origin = {u : u.split('^')[0] for u in self.nodes}
         self.node_of_origin = node_of_origin
-        self.migrations = [(u, v) for (u, v) in self.edges if self.get_label(u) != self.get_label(v)]
         self.unobserved_clones = [up for up in self.nodes if self.get_label(up) not in unrefined_tree.get_labels(node_of_origin[up])]
+        self.migrations = [(u, v) for (u, v) in self.edges if self.get_label(u) != self.get_label(v)]
         if timestamps is None:
             self._get_comigrations()
         else:
@@ -207,6 +207,7 @@ class Refinement(Tree):
             self.comigrations = defaultdict(list)
             for uv, t in timestamps.items():
                 self.comigrations[t].append(uv)
+        self.seeding_locations = list(set([attrs[u]['label'] for (u, _) in self.migrations]))
 
     def __eq__(self, other):
         return super().__eq__(other) and set([(u, self.get_label(u)) for u in self.nodes]) == set([(u, other.get_label(u)) for u in other.nodes])
@@ -343,9 +344,6 @@ class Refinement(Tree):
     def migrating_clones(self):
         return set([self.node_of_origin[u] for u, _ in self.migrations])
 
-    def check_longitudinal_consistency(self, time_of_observation=None):
-        pass
-
     def migration_pattern(self):
         return self.migration_graph().migration_pattern()
     
@@ -404,3 +402,20 @@ class Refinement(Tree):
         if filename is not None:
             t.render(filename)
         return t
+
+
+    def n_unobserved_clones(self):
+        return len(self.unobserved_clones)
+
+    def n_migrations(self):
+        return len(self.migrations)
+
+    def n_comigrations(self):
+        return len(self.comigrations)
+
+    def n_seeding_locations(self):
+        return len(self.seeding_locations)
+
+    def parsimony_scores(self):
+        return {'U': self.n_unobserved_clones(), 'M': self.n_migrations(),\
+                'C': self.n_comigrations(), 'S': self.n_seeding_locations()}

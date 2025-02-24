@@ -8,9 +8,11 @@ from .tree import Refinement
 
 class SolutionSet:
 
-    def __init__(self, sol_list=[], check=True):
+    def __init__(self, sol_list=[], check=True, ranked=True):
         self.solution_set = set(sol_list)
         self.unrefined_tree = [i for i in sol_list][0].unrefined_tree if len(sol_list) > 0 else None
+        if ranked:
+            self.sol_list = sol_list
         if check:
             for sol in self.solution_set:
                 if self.unrefined_tree != sol.unrefined_tree:
@@ -31,6 +33,11 @@ class SolutionSet:
     
     def __iter__(self):
         return iter(self.solution_set)
+
+    def __getitem__(self, index):
+        if not hasattr(self, 'sol_list'):
+            self.sol_list = list(self.solution_set)
+        return self.sol_list[index]
     
     def __add__(s1, s2):
         if len(s1.solution_set) == 0:
@@ -38,13 +45,26 @@ class SolutionSet:
         elif len(s2.solution_set) == 0:
             return s1
         return SolutionSet(s1.solution_set.union(s2.solution_set), check=(s1.unrefined_tree!=s2.unrefined_tree))
+
+    def __sub__(s1, s2):
+        if len(s1.solution_set) == 0:
+            return SolutionSet()
+        elif len(s2.solution_set) == 0:
+            return s1
+        return SolutionSet(s1.solution_set - s2.solution_set, check=(s1.unrefined_tree!=s2.unrefined_tree))
+
+    def intersection(s1, s2):
+        if len(s1.solution_set) == 0 or len(s2.solution_set) == 0:
+            return SolutionSet()
+        return SolutionSet(s1.solution_set.intersection(s2.solution_set), check=(s1.unrefined_tree!=s2.unrefined_tree))
     
     def filter(self, criteria_ordering):
         if criteria_ordering is not None:
             sort_key_map = { 
-                'M': lambda ref: len(ref.migrations), 
                 'U': lambda ref: len(ref.unobserved_clones), 
-                'C': lambda ref: len(ref.comigrations) 
+                'M': lambda ref: len(ref.migrations), 
+                'C': lambda ref: len(ref.comigrations),
+                'S': lambda ref: len(ref.seeding_locations),
             }
             sorter = lambda ref, co: tuple(sort_key_map[letter](ref) for letter in co)
             min_val = min([sorter(sol, criteria_ordering) for sol in self.solution_set])
@@ -52,12 +72,12 @@ class SolutionSet:
         else:
             return self
 
-    def seeding_location_filter(self):
-        min_val = min([len(sol.migration_graph().get_seeding_locations()) for sol in self])
-        return SolutionSet([sol for sol in self if len(sol.migration_graph().get_seeding_locations()) == min_val])
+    # def seeding_location_filter(self):
+    #     min_val = min([len(sol.migration_graph().get_seeding_locations()) for sol in self])
+    #     return SolutionSet([sol for sol in self if len(sol.migration_graph().get_seeding_locations()) == min_val])
 
 
-    # def co_occurence_table(self):
+    # # def co_occurence_table(self):
     #     table = defaultdict(lambda: defaultdict(int))
     #     for solution in self.solution_set:
     #         for u1, v1 in solution.migration_graph.migration_edges():
