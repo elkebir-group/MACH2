@@ -6,8 +6,17 @@ from .solutionset import SolutionSet
 
 
 class MACH2:
+    """
+    A class representing the MACH2 algorithm for inferring migration histories of metastatic cancer.
+    """
     def __init__(self, clone_tree, primary_location=None, criteria_ordering='UMC'):
-
+        """
+        Initializes the MACH2 solver with a clone tree, optional primary location, and criteria ordering.
+        
+        :param clone_tree: The input clone tree to be refined.
+        :param primary_location: Optional primary location constraint.
+        :param criteria_ordering: String specifying the order of optimization criteria (e.g., 'UMC').
+        """
         self.tree = clone_tree
         self.S = clone_tree.locations
         self.V = clone_tree.nodes
@@ -25,6 +34,7 @@ class MACH2:
             self._add_primary_location_constraint(primary_location)
 
     def _add_vars(self, criteria_ordering):
+        """Private function for internal use by the MACH2 algorithm."""
         self.g = self.m.addVars(self.S, self.S, [(v, 'node') for v in self.V] + self.E, vtype=GRB.BINARY, lb=0, ub=1)
         self.r = self.m.addVars(self.S, vtype=GRB.BINARY, lb=0, ub=1)
         self.a = self.m.addVars(self.S, self.S, self.V, vtype=GRB.CONTINUOUS, lb=0, ub=1)
@@ -37,6 +47,7 @@ class MACH2:
             self.s = self.m.addVars(self.S, vtype=GRB.BINARY, lb=0, ub=1)
 
     def _add_optimization_function(self, criteria_ordering):
+        """Private function for internal use by the MACH2 algorithm."""
         pscores = {}
         if 'U' in criteria_ordering:
             pscores['U'] = 0
@@ -69,6 +80,7 @@ class MACH2:
         self.m.setObjective(score, GRB.MINIMIZE)
 
     def _add_constraints(self, criteria_ordering):
+        """Private function for internal use by the MACH2 algorithm."""
         # there is exactly one primary location
         self.m.addConstr( self.r.sum() == 1)
 
@@ -175,6 +187,7 @@ class MACH2:
 
 
     def _add_speedup_constraints(self, criteria_ordering, primary_location=None):
+        """Private function for internal use by the MACH2 algorithm."""
         for v in self.V:
             for s in self.S:
                 self.m.addConstr( self.g[s, s, v, 'node'] == 0 )
@@ -223,9 +236,11 @@ class MACH2:
 
 
     def _add_primary_location_constraint(self, primary_location):
+        """Private function for internal use by the MACH2 algorithm."""
         self.m.addConstr( self.r[primary_location] == 1 )
 
     def _count_retrieved_solutions(self):
+        """Private function for internal use by the MACH2 algorithm."""
         self.m.setParam(GRB.Param.SolutionNumber, 0)
         best_obj_val = self.m.PoolObjVal
         for e in range(self.m.SolCount):
@@ -235,6 +250,15 @@ class MACH2:
         return self.m.SolCount
 
     def solve(self, logfile='', starting_nsols = 37, max_solutions=37888, threads=0):
+        """
+        Solves the MACH2 optimization problem and retrieves the solutions.
+        
+        :param logfile: Path to the log file for Gurobi output.
+        :param starting_nsols: Initial number of solutions to retrieve.
+        :param max_solutions: Maximum number of solutions to retrieve.
+        :param threads: Number of threads to use for optimization.
+        :return: A SolutionSet containing the refined trees (Refinement).
+        """
         while True:
             self.m.setParam(GRB.Param.MIPGap, 0)
             self.m.setParam(GRB.Param.PoolSearchMode, 2)
@@ -267,22 +291,6 @@ class MACH2:
                         if self.g[s, t, u, v].Xn > 0.5:
                             R[(u,v)].append((s,t))
             Rs.append(R)
-            # if e == 0:
-            #     for s in self.S:
-            #         for t in self.S:
-            #             if self.z[s, t].Xn > 0.5:
-            #                 print('z', s, t, self.z[s, t].Xn)
-            #     for s in self.S:
-            #         for t in self.S:
-            #             for u, v in self.E:
-            #                 if self.c[s, t, u, v].Xn > 0.5:
-            #                     print('c', s, t, u, v, self.c[s, t, u, v].Xn)
-            #     for s in self.S:
-            #         for t in self.S:
-            #             for u in self.V:
-            #                 for sp in self.tree.get_labels(u):
-            #                     if self.d[s, t, sp, u].Xn > 0.5:
-            #                         print('d', s, t, sp, u, self.d[s, t, sp, u].Xn)
         
         solset = SolutionSet([Refinement.from_refinement_graph(self.tree, R) for R in Rs])
         if 'C' in self.criteria_ordering:

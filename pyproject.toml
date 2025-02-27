@@ -4,13 +4,13 @@ build-backend = "pdm.backend"
 
 [project]
 name = "mach2"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
   { name="Mrinmoy Saha Roddur", email="mroddur2@illinois.edu" },
   { name="Vikram Ramavarapu", email="vikramr2@illinois.edu" },
   { name="Abigail Bunkum", email="abigail.bunkum.21@ucl.ac.uk" },
   { name="Ariana Huebner,", email="ariana.huebner.16@ucl.ac.uk" },
-  { name="Roman Minyev", email="mineyev2@illinois.edu" },
+  { name="Roman Mineyev", email="mineyev2@illinois.edu" },
   { name="Nicholas McGranahan,", email="nicholas.mcgranahan.10@ucl.ac.uk" },
   { name="Simone Zaccaria,", email="s.zaccaria@ucl.ac.uk" },
   { name="Mohammed El-Kebir", email="melkebir@illinois.edu" },
@@ -20,23 +20,27 @@ maintainers = [
   { name="Mrinmoy Saha Roddur", email="mroddur2@illinois.edu" },
 ]
 
-description = "Migration Analysis of Clonal History 2"
+description = "Migration Analysis of Clonal Histories 2"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.12"
 license = {file = "LICENSE"}
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
-keywords = ["Computational biology", "Bioinformatics", "Cancer", "Metastasis", "Phylogeny"]
+keywords = ["Computational Biology", "Bioinformatics", "Cancer", "Metastasis", "Phylogeny", "Integer Linear Programming", "Combinatorial Optimization"]
 dependencies = [
     'pandas',
     'networkx',
     'gurobipy',
-    "jupyterlab",
-    "graphviz",
-    "mach2viz"
+    'jupyterlab',
+    'graphviz',
+]
+
+[project.optional-dependencies]
+viz = [
+      'mach2-viz'
 ]
 
 [project.scripts]
