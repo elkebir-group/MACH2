@@ -2,8 +2,6 @@ import networkx as nx
 import graphviz as gv
 from .migrationgraph import MigrationGraph
 from . import utils
-import gurobipy as gp
-from gurobipy import GRB
 from collections import defaultdict
 
 
@@ -375,7 +373,12 @@ class Refinement(Tree):
         self.unobserved_clones = [up for up in self.nodes if self.get_label(up) not in unrefined_tree.get_labels(node_of_origin[up])]
         self.migrations = [(u, v) for (u, v) in self.edges if self.get_label(u) != self.get_label(v)]
         if timestamps is None:
-            self._get_comigrations()
+            try:
+                self._get_comigrations()
+            except ModuleNotFoundError:
+                print('Gurobi required for inferring temporally consistent comigrations not found. \
+                      Comigrations inferred by greedy approach may be temporally inconsistent.')
+                self._greedy_comigrations()
         else:
             self.timestamps = timestamps
             self.comigrations = defaultdict(list)
@@ -498,6 +501,8 @@ class Refinement(Tree):
         """
         Calculates the comigrations and timestamps for the tree.
         """
+        import gurobipy as gp
+        from gurobipy import GRB
         migs = self.migrations
         migs_st = set([(self.get_label(u), self.get_label(v)) for (u,v) in self.migrations])
         self.X = set()
@@ -553,6 +558,31 @@ class Refinement(Tree):
                 if l[u, v, e].X > 0.5:
                     self.timestamps[(u,v)] = e
                     self.comigrations[e].append((u,v))
+
+    def _greedy_comigrations(self):
+        """
+        Greedily calculates the comigrations and timestamps for the tree.
+        """
+        label2comig = defaultdict(list)
+        self.comigrations = dict()
+        for u, v in self.migrations:
+            b = True
+            for c in label2comig[(self.get_label(u), self.get_label(v))]:
+                bb = True
+                for _, vv in self.comigrations[c]:
+                    if nx.has_path(self._tree, vv, u):
+                        bb = False
+                        break
+                if bb:
+                    self.comigrations[c].append((u,v))
+                    self.timestamps[(u,v)] = c
+                    b = False
+                    break
+            if b:
+                label2comig[(self.get_label(u), self.get_label(v))].append(len(self.comigrations))
+                self.timestamps[(u,v)] = len(self.comigrations)
+                self.comigrations[len(self.comigrations)] = [(u,v)]
+
 
     def migration_graph(self):
         """

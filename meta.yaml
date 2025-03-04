@@ -1,60 +1,48 @@
-{% set name = "MACH2" %}
+{% set name = "mach2" %}
 {% set version = "1.0.1" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-    url: https://github.com/elkebir-group/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 3859295c1e615ce9ce5d34e73c9dea33a08a105a502096e7640e0feeda83756e
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/mach2-{{ version }}.tar.gz
+  sha256: cd32d7adb752533630bc4360c20eb1b85bda13b18043a41cb736ea974927e535
 
 build:
-  number: 1
-  run_exports:
-    - {{ pin_subpackage('tribal', max_pin='x.x') }} 
-  script:
-    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
-    - $CC -c tribal/dnapars/phylip.c -o tribal/dnapars/phylip.o -fcommon
-    - $CC -c tribal/dnapars/seq.c -o tribal/dnapars/seq.o -fcommon
-    - $CC -c tribal/dnapars/dnapars.c -o tribal/dnapars/dnapars.o -fcommon
-    - $CC tribal/dnapars/seq.o tribal/dnapars/phylip.o tribal/dnapars/dnapars.o -lm -o $PREFIX/bin/dnapars
+  entry_points:
+    - mach2 = mach2.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
 
 requirements:
-  build:
-    - {{ compiler('c') }} 
-    - {{ compiler('cxx') }}
   host:
-    - python >=3.9,<3.11
+    - python >=3.12
+    - pdm-backend
     - pip
-    - setuptools
   run:
-    - python >=3.9,<3.11
-    - numpy >=1.26,<2.0
+    - python >=3.12
     - pandas
-    - networkx >=3.1
-    - pygraphviz >=1.10
-    - ete3 >=3.1.2
-    - mafft ==7.526
-    - glpk >=5.0
-    - pyomo >=6.7
-    - biopython >=1.81
+    - networkx
+    - gurobipy
+    - jupyterlab
+    - python-graphviz
 
 test:
   imports:
-    - tribal
+    - mach2
   commands:
-    - tribal --help
-    - tribal preprocess -h
-    - tribal fit -h
+    - pip check
+    - mach2 --help
+  requires:
+    - pip
 
 about:
-  home: "https://github.com/elkebir-group/TRIBAL"
-  doc_url: "https://elkebir-group.github.io/TRIBAL"
-  license: "BSD-3-Clause"
-  summary: "TRIBAL is a package to infer B cell lineage trees from single-cell RNA sequencing data."
+  summary: Migration Analysis of Clonal Histories 2
+  license: BSD-3-Clause
+  license_file: LICENSE
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
+  recipe-maintainers:
+    - roddur

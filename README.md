@@ -1,6 +1,12 @@
 # MACH2
 
-A mathematical framework for inferring migration histories of metastatic cancer from clonal trees and the location of extant clones (preprint: https://www.biorxiv.org/content/10.1101/2024.11.19.624301v2). The accompanying visualization tool, MACH2-viz, can be found [here](https://github.com/elkebir-group/mach2-viz).
+MACH2 is a computational tool for inferring optimal migration histories of metastatic cancer from clonal trees and observed clone locations. It supports multiple parsimony criteria, including the *unobserved clone criterion*, and guarantees optimality and completeness by systematically enumerating solutions.  
+
+![MACH2 overview](overview.png "MACH2")
+
+Preprint: [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.19.624301v2).  
+
+For the accompanying visualization tool, see [MACH2-viz](https://github.com/elkebir-group/mach2-viz).  
 
 ## Table of contents
 
@@ -19,7 +25,7 @@ A mathematical framework for inferring migration histories of metastatic cancer 
 ### 1.1 Prerequisites
 
 - **Python** - `MACH2` requires Python 3.12 or newer.
-- **ILP solver** - `MACH2` requires an ILP solver installed to solve **PMH-TR**. Currently `MACH2` only supports `Gurobi optimizer`, but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS), and the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
+- **ILP solver** - `MACH2` requires an ILP solver installed. Currently `MACH2` only supports `Gurobi optimizer`, but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS), and the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
 
 ### 1.2 Install using `pip`
 
@@ -27,7 +33,7 @@ A mathematical framework for inferring migration histories of metastatic cancer 
 
                 $ pip install mach2
 
-If you want to install `MACH2-viz` along with `MACH2`, you can run the following command:
+If you want to install `MACH2-viz` along with `MACH2`, you can run the following command instead:
 
                 $ pip install 'mach2[viz]' 
 
@@ -37,7 +43,7 @@ If you want to install `MACH2-viz` along with `MACH2`, you can run the following
 
 `MACH2` can be installed using `conda`. We advise to create a new environment in `conda`. If creating a new environment, dependencies can be installed simultaneously.
 
-                $ conda create -n mach2 python=3 pandas networkx gurobi jupyterlab graphviz pygraphviz -c conda-forge -c gurobi
+                $ conda create -n mach2 python=3.12 pandas networkx gurobi jupyterlab graphviz pygraphviz -c conda-forge -c gurobi
                 $ conda activate mach2
 
 If using existing conda environment, the following command installs the dependencies.
