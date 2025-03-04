@@ -33,7 +33,6 @@ keywords = ["Computational Biology", "Bioinformatics", "Cancer", "Metastasis", "
 dependencies = [
     'pandas',
     'networkx',
-    'gurobipy',
     'jupyterlab',
     'graphviz',
 ]
