@@ -9,13 +9,13 @@ class MACH2:
     """
     A class representing the MACH2 algorithm for inferring migration histories of metastatic cancer.
     """
-    def __init__(self, clone_tree, primary_location=None, criteria_ordering='UMC'):
+    def __init__(self, clone_tree, primary_location=None, criteria_ordering='UMCS'):
         """
         Initializes the MACH2 solver with a clone tree, optional primary location, and criteria ordering.
         
         :param clone_tree: The input clone tree to be refined.
         :param primary_location: Optional primary location constraint.
-        :param criteria_ordering: String specifying the order of optimization criteria (e.g., 'UMC').
+        :param criteria_ordering: String specifying the order of optimization criteria (e.g., 'UMCS').
         """
         self.tree = clone_tree
         self.S = clone_tree.locations

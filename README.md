@@ -13,19 +13,25 @@ For the accompanying visualization tool, see [MACH2-viz](https://github.com/elke
 1. [Installation](#installation)  
         1.1 [Prerequisite](#prerequisite)  
         1.2 [Install using `pip`](#install-using-pip)
-        1.3 [Install using `pip`](#install-using-conda)
+        1.3 [Install using `conda`](#install-using-conda)
+        1.4 [Install from source](#install-from-source)
 2. [Usage instruction](#usage-instruction)  
         2.1 [I/O formats](#io-formats)
         2.2 [Usage](#usage)
                 2.2.1 [From `JupyterLab`](#from-jupyterlab)  
                 2.2.2 [From Command Line](#from-command-line)  
+3. [Reproduction](#reproduction)  
+
 
 ## 1. Installation
 
 ### 1.1 Prerequisites
 
 - **Python** - `MACH2` requires Python 3.12 or newer.
-- **ILP solver** - `MACH2` requires an ILP solver installed. Currently `MACH2` only supports `Gurobi optimizer`, but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS), and the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
+- **ILP solver** - `MACH2` requires an ILP solver installed. Currently `MACH2` only supports `Gurobi optimizer` (version 12 or newer), but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS), and the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
+- **OS** - Since MACH2 is a pure Python package, it can be run on any operating system that supports Python.
+
+MACH2 has been tested with Python 3.12 and Gurobi optimizer version 12 on CentOS 7.
 
 ### 1.2 Install using `pip`
 
@@ -56,7 +62,17 @@ Next, we install `MACH2`. To that end, we download `MACH2` repository from GitHu
                 $ cd MACH2
                 $ pip install . --no-deps
 
-## Usage Instruction
+### 1.4 Install from source
+
+Since MACH2 is a python package, one may clone the repository and install from source using `pip`.
+
+                $ git clone https://github.com/elkebir-group/MACH2.git
+                $ cd MACH2
+                $ pip install .
+
+In any approach, MACH2 takes less than 5 minutes to install on a normal computer with regular internet speed.
+
+## 2. Usage Instruction
 
 ### 2.1 I/O formats
 
@@ -111,6 +127,7 @@ Additionaly, `MACH2` can output files in Graphviz DOT format or JSON format.
 
 `MACH2` can be directly imported and accessed from JupyterLab. 
 We include an [example JupyterLab notebook][https://github.com/elkebir-group/MACH2/blob/main/analysis/example.ipynb] to illustrate basic usage.
+The notebook runs in less than one minute on a normal computer.
 For more details, check the documentation for classes and methods.
 
 
@@ -161,4 +178,8 @@ An example execution
 
         $ mach2 data/breast/A1.tree data/breast/A1.observed.labeling -p breast --colormap data/breast/coloring.txt
         
+For this specific instance, MACH2 takes less than one second to run on a normal computer.
 
+## 3. Reproduction
+
+We include a [JupyterLab notebook][https://github.com/elkebir-group/MACH2/blob/main/analysis/run.ipynb] containing relevant codes to run MACH2 (and also the other migration history inference methods) on all the simulated and real data and generate the results presented in the preprint.
