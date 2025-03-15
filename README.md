@@ -10,17 +10,17 @@ For the accompanying visualization tool, see [MACH2-viz](https://github.com/elke
 
 ## Table of contents
 
-1. [Installation](#installation)  
-        1.1 [Prerequisite](#prerequisite)  
-        1.2 [Install using `pip`](#install-using-pip)
-        1.3 [Install using `conda`](#install-using-conda)
-        1.4 [Install from source](#install-from-source)
-2. [Usage instruction](#usage-instruction)  
-        2.1 [I/O formats](#io-formats)
-        2.2 [Usage](#usage)
-                2.2.1 [From `JupyterLab`](#from-jupyterlab)  
-                2.2.2 [From Command Line](#from-command-line)  
-3. [Reproduction](#reproduction)  
+1. [Installation](#1-installation)  
+        1.1 [Prerequisite](#11-prerequisite)  
+        1.2 [Install using `pip`](#12-install-using-pip)  
+        1.3 [Install using `conda`](#13-install-using-conda)  
+        1.4 [Install from source](#14-install-from-source)  
+2. [Usage instruction](#2-usage-instruction)  
+        2.1 [I/O formats](#21-io-formats)  
+        2.2 [Usage](#22-usage)  
+                2.2.1 [From `JupyterLab`](#221-from-jupyterlab)  
+                2.2.2 [From Terminal](#222-from-terminal)  
+3. [Reproduction](#3-reproduction)  
 
 
 ## 1. Installation
