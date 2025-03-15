@@ -182,4 +182,4 @@ For this specific instance, MACH2 takes less than one second to run on a normal 
 
 ## 3. Reproduction
 
-We include a [JupyterLab notebook][https://github.com/elkebir-group/MACH2/blob/main/analysis/run.ipynb] containing relevant codes to run MACH2 (and also the other migration history inference methods) on all the simulated and real data and generate the results presented in the preprint.
+We include a [JupyterLab notebook](https://github.com/elkebir-group/MACH2/blob/main/analysis/run.ipynb) containing relevant codes to run MACH2 (and also the other migration history inference methods) on all the simulated and real data and generate the results presented in the preprint.
