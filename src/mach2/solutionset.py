@@ -190,7 +190,7 @@ class SolutionSet:
                     },
                     'solutions' : [
                         {
-                            'name' : f'#{i}',
+                            'name' : f'\\#{i}',
                             'tree': [[u,v, (sol.timestamps[(u,v)] if (u,v) in sol.timestamps else -1)] for u,v in sol.edges], 
                             'labeling': [ [v, sol.get_label(v)] for v in sol.nodes], 
                             'migration': [[s, t, c] for (s,t), c in sol.migration_graph().get_each_migration().items()],

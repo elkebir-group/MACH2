@@ -19,6 +19,7 @@ def process_args():
     parser.add_argument('--starting_nsols', type=int, help='Starting number of solutions (default=37)', default=37)
     parser.add_argument('--max_solutions', type=int, help='Maximum number of solutions retained (default=37888)', default=37888)
     parser.add_argument('-t', '--threads', type=int, help='Number of threads', default=0)
+    parser.add_argument('--timelimit', type=int, default=0, help='Returns the best suboptimal solution found in the time limit.')
     parser.add_argument('--viz', '--open_in_viz', action='store_true', default=False, help='Open the locations on MACH2-viz \
         (default=False)')
 
@@ -55,7 +56,7 @@ def main():
 
     start_t = time.time()
     solver = MACH2(tree, primary_location=args.primary, criteria_ordering=args.criteria)
-    solutions = solver.solve(logfile=logfile,  starting_nsols= args.starting_nsols, max_solutions=args.max_solutions, threads=args.threads)
+    solutions = solver.solve(logfile=logfile,  starting_nsols= args.starting_nsols, max_solutions=args.max_solutions, threads=args.threads, timelimit=args.timelimit)
     total_t = time.time() - start_t
 
     if args.viz:

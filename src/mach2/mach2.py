@@ -249,7 +249,7 @@ class MACH2:
                 return e
         return self.m.SolCount
 
-    def solve(self, logfile='', starting_nsols = 37, max_solutions=37888, threads=0):
+    def solve(self, logfile='', starting_nsols = 37, max_solutions=37888, threads=0, timelimit=0):
         """
         Solves the MACH2 optimization problem and retrieves the solutions.
         
@@ -257,6 +257,7 @@ class MACH2:
         :param starting_nsols: Initial number of solutions to retrieve.
         :param max_solutions: Maximum number of solutions to retrieve.
         :param threads: Number of threads to use for optimization.
+        :param timelimit: Amount of time the ILP will be run.
         :return: A SolutionSet containing the refined trees (Refinement).
         """
         while True:
@@ -266,7 +267,15 @@ class MACH2:
             self.m.setParam(GRB.Param.LogToConsole, 0)
             self.m.setParam(GRB.Param.LogFile, logfile)
             self.m.setParam(GRB.Param.PoolSolutions, starting_nsols)
+            if timelimit > 0:
+                self.m.setParam(GRB.Param.TimeLimit, timelimit)
             self.m.optimize()
+
+            if self.m.SolCount == 0:
+                raise Exception("No feasible solution found within time limit (default: None).")
+            elif self.m.status == GRB.TIME_LIMIT:
+                print('Time limit reached. Solutions may be suboptimal.')
+
             n = self._count_retrieved_solutions()
             if starting_nsols > n:
                 self.successfully_run = True
