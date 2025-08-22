@@ -272,7 +272,7 @@ class MACH2:
             self.m.optimize()
 
             if self.m.SolCount == 0:
-                raise Exception("No feasible solution found within time limit (default: None).")
+                raise ValueError("No feasible solution found within time limit (default: None).")
             elif self.m.status == GRB.TIME_LIMIT:
                 if self.m.MIPGap == 0:
                     print("Time limit reached. Partial optimal solution space returned.")
@@ -317,6 +317,6 @@ class MACH2:
             elif min(actual_comigs) - inferred_comigs < 2:
                 return solset.filter(self.criteria_ordering)
             else:
-                raise ValueError("Super exceptional case detected. Please open a GitHub issue in MACH2 repository.")
+                raise ValueError("Super exceptional case detected. Please open a GitHub issue in MACH2 repository and I'll implement this case.")
         else:
             return solset
