@@ -278,6 +278,7 @@ class MACH2:
                     print("Time limit reached. Partial optimal solution space returned.")
                 else:
                     print("Time limit reached. Solutions may be suboptimal.")
+                break
 
             n = self._count_retrieved_solutions()
             if starting_nsols > n:
@@ -285,6 +286,7 @@ class MACH2:
                 break
             elif starting_nsols * 2 > max_solutions:
                 self.successfully_run = False
+                print("Maximum number of solutions reached. Partial optimal solution space returned.")
                 break
             else:
                 starting_nsols *= 2
