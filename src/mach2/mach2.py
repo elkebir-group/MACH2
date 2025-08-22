@@ -274,7 +274,7 @@ class MACH2:
             if self.m.SolCount == 0:
                 raise Exception("No feasible solution found within time limit (default: None).")
             elif self.m.status == GRB.TIME_LIMIT:
-                if model.MIPGap == 0:
+                if self.m.MIPGap == 0:
                     print("Time limit reached. Partial optimal solution space returned.")
                 else:
                     print("Time limit reached. Solutions may be suboptimal.")
