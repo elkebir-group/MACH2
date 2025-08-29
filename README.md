@@ -143,9 +143,9 @@ Additionaly `MACH2` can return JSON file encoding all the solutions. The JSON fi
 
 `MACH2` can be run using python.
 
-                usage: mach2 [-h] [-c CRITERIA] [-p PRIMARY] [--colormap COLORMAP] [--log] [-o OUTPUT] [--starting_nsols STARTING_NSOLS]
-                             [--max_solutions MAX_SOLUTIONS] [-t THREADS] [--viz]
-                             clonal_tree observed_labeling
+                mach2 [-h] [-c CRITERIA] [-p PRIMARY] [--colormap COLORMAP] [--log] [-o OUTPUT] [--starting_nsols STARTING_NSOLS] [--max_solutions MAX_SOLUTIONS] [-t THREADS]
+                        [--timelimit TIMELIMIT] [--viz]
+                        clonal_tree observed_labeling
 
                 MACH2
 
