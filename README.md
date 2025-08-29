@@ -27,7 +27,7 @@ For the accompanying visualization tool, see [MACH2-viz](https://github.com/elke
 
 ### 1.1 Prerequisites
 
-- **Python** - `MACH2` requires Python 3.12 or newer.
+- **Python** - `MACH2` requires Python 3.12 .
 - **ILP solver** - `MACH2` requires an ILP solver installed. Currently `MACH2` only supports `Gurobi optimizer` (version 12 or newer), but we are going to add support for more ILP solvers in the future. `MACH2` requires a valid Gurobi installation and license key. The location of Gurobi should be present in `LD_LIBRARY_PATH` (linux) or `DYLD_LIBRARY_PATH` (macOS), and the license key should be saved in the environment variable `GRB_LICENSE_KEY`.
 - **OS** - Since MACH2 is a pure Python package, it can be run on any operating system that supports Python.
 
@@ -35,32 +35,29 @@ MACH2 has been tested with Python 3.12 and Gurobi optimizer version 12 on CentOS
 
 ### 1.2 Install using `pip`
 
-`MACH2` can easily be installed using `pip`, the package installer for Python. Open a terminal or command prompt and run the following command:
+`MACH2` can easily be installed using `pip`, the package installer for Python.
+Gurobi python package also needs to be installed separately.
+Open a terminal or command prompt and run the following command:
 
+                $ pip install gurobipy
                 $ pip install mach2
 
-If you want to install `MACH2-viz` along with `MACH2`, you can run the following command instead:
+If you want to install `MACH2-viz` along with `MACH2`, you can run the following commands instead:
 
+                $ pip install gurobipy
                 $ pip install 'mach2[viz]' 
 
 `MACH2-viz` can be installed separately too.
 
 ### 1.3 Install using `conda`
 
-`MACH2` can be installed using `conda`. We advise to create a new environment in `conda`. If creating a new environment, dependencies can be installed simultaneously.
+`MACH2` can be installed using `conda` from the channel `bioconda`. We advise to create a new environment in `conda`.
 
-                $ conda create -n mach2 python=3.12 pandas networkx gurobi jupyterlab graphviz pygraphviz -c conda-forge -c gurobi
-                $ conda activate mach2
+                $ conda create -n mach2 python=3.12 gurobi mach2 -c gurobi -c bioconda
 
-If using existing conda environment, the following command installs the dependencies.
+If using existing conda environment, the following command installs MACH2 and Gurobi.
 
-                $ conda install -c conda-forge -c gurobi pandas networkx gurobi jupyterlab graphviz pygraphviz
-
-Next, we install `MACH2`. To that end, we download `MACH2` repository from GitHub and install it.
-
-                $ git clone https://github.com/elkebir-group/MACH2.git
-                $ cd MACH2
-                $ pip install . --no-deps
+                $ conda install gurobi mach2 -c gurobi -c bioconda
 
 ### 1.4 Install from source
 
