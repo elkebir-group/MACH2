@@ -150,26 +150,28 @@ Additionaly `MACH2` can return JSON file encoding all the solutions. The JSON fi
                 MACH2
 
                 positional arguments:
-                        clonal_tree           Input clonal tree
-                        observed_labeling     Input observed labeling
+                clonal_tree           Input clonal tree
+                observed_labeling     Input observed labeling
 
-                options:
-                        -h, --help            show this help message and exit
-                        -c CRITERIA, --criteria CRITERIA
-                                                Criteria ordering
-                        -p PRIMARY, --primary PRIMARY
-                                                Primary anatomical location
-                        --colormap COLORMAP   Color map file
-                        --log                 Outputs Gurobi logging (default=False)
-                        -o OUTPUT, --output OUTPUT
-                                                Output folder (default=current folder)
-                        --starting_nsols STARTING_NSOLS
-                                                Starting number of solutions (default=37)
-                        --max_solutions MAX_SOLUTIONS
-                                                Maximum number of solutions retained (default=37888)
-                        -t THREADS, --threads THREADS
-                                                Number of threads
-                        --viz, --open_in_viz  Open the locations on MACH2-viz (default=False)
+                optional arguments:
+                -h, --help            show this help message and exit
+                -c CRITERIA, --criteria CRITERIA
+                                        Criteria ordering
+                -p PRIMARY, --primary PRIMARY
+                                        Primary anatomical location
+                --colormap COLORMAP   Color map file
+                --log                 Outputs Gurobi logging (default=False)
+                -o OUTPUT, --output OUTPUT
+                                        Output folder (default=current folder)
+                --starting_nsols STARTING_NSOLS
+                                        Starting number of solutions (default=37)
+                --max_solutions MAX_SOLUTIONS
+                                        Maximum number of solutions retained (default=37888)
+                -t THREADS, --threads THREADS
+                                        Number of threads
+                --timelimit TIMELIMIT
+                                        Returns the best suboptimal solution found in the time limit (in seconds).
+                --viz, --open_in_viz  Open the locations on MACH2-viz (default=False)
 
 An example execution
 
