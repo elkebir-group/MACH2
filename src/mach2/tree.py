@@ -310,14 +310,6 @@ class MultiLabeledTree(Tree):
         """
         self._colormap = colormap
 
-    def set_time_of_observation(self, time_of_observation):
-        """
-        Sets the time of observation for the tree.
-
-        :param time_of_observation: The time of observation to set.
-        """
-        self.time_of_observation = time_of_observation
-
     def draw(self):
         """
         Draws the MultiLabeledTree using Graphviz.
@@ -558,6 +550,109 @@ class Refinement(Tree):
                 if l[u, v, e].X > 0.5:
                     self.timestamps[(u,v)] = e
                     self.comigrations[e].append((u,v))
+
+    def check_consistency_with_timepoints(self, location_time_map):
+        """
+        Given the time of observation of each location, 
+        """
+        import gurobipy as gp
+        from gurobipy import GRB
+        migs = self.migrations
+        primary = self.get_label(self.root)
+        locations = [ s for s in self.locations if s != primary]
+        migs_st = set([(self.get_label(u), self.get_label(v)) for (u,v) in self.migrations])
+        self.X = set()
+        for leaf in self.paths:
+            path = self.paths[leaf]
+            current = None
+            for uv in path:
+                if uv in migs:
+                    if current is None:
+                        current = uv
+                    else:
+                        self.X.add((current, uv))
+                        current = uv
+        
+        m = gp.Model('PCCwTC')
+        m.setParam(GRB.param.LogToConsole, 0)
+        m.setParam(GRB.param.LogFile, '')
+        m.setParam(GRB.Param.Threads, 0)
+
+        l = m.addVars(migs, range(len(migs)), vtype=GRB.BINARY, lb=0, ub=1)
+        pi = m.addVars(range(len(migs)), migs_st, vtype=GRB.CONTINUOUS, lb=0, ub=1)
+        st = m.addVars(locations, range(len(migs)), vtype=GRB.BINARY, lb=0, ub=1)
+
+        for u, v in migs:
+            m.addConstr(l.sum(u, v, '*') == 1)
+        if len(migs) > 60:
+            for E in range(len(migs)):
+                for (u, v), (up, vp) in self.X:
+                    m.addConstr(l.sum(u, v, range(E)) >= l.sum(up, vp, range(E)))
+        else:
+            for (u, v), (up, vp) in self.X:
+                sum1 = 0
+                for E in range(len(migs)):
+                    sum1 += 2**(len(migs) - E) * (l[u, v, E] - l[up, vp, E])
+                m.addConstr( sum1 >= 0)
+
+        for e in range(len(migs)):
+            m.addConstr( pi.sum(e, '*', '*') <= 1 )
+
+        for u, v in migs:
+            for e in range(len(migs)):
+                m.addConstr(pi[e, self.get_label(u), self.get_label(v)] >= l[u, v, e])
+
+        for e in range(len(migs) - 1):
+            m.addConstr(pi.sum(e, '*', '*') >= pi.sum(e + 1, '*', '*'))
+
+        for s, t in migs_st:
+            for e in range(len(migs)):
+                sum1=0
+                for (u,v) in [(up,vp) for (up,vp) in migs if (self.get_label(up), self.get_label(vp)) == (s,t)]:
+                    sum1 += l[u,v, e]
+                m.addConstr(pi[e, s, t] <= sum1)
+                # m.addConstr(pi[e, s, t] <= l.sum('*', '*', e))
+
+        for t in locations:
+            m.addConstr( st.sum(t,'*') == 1 )
+            for e in range(len(migs)):
+                m.addConstr(pi.sum(e, '*', t) >= st[t, e])
+                for E in range(e):
+                    m.addConstr(pi.sum(range(E), '*', t) <= len(migs) * st.sum(t, range(E)))
+
+        for s in locations:
+            for t in locations:
+                if s != t and s in location_time_map and t in location_time_map and \
+                location_time_map[s] < location_time_map[t]:
+                    for E in range(len(migs)):
+                        m.addConstr(st.sum(s, range(E)) >= st.sum(t, range(E)))
+
+        m.setObjective(pi.sum(), GRB.MINIMIZE)
+        m.optimize()
+
+        if m.SolCount == 0:
+            return False
+        else:
+            self.timestamps = {}
+            self.comigrations = defaultdict(list)
+            for u, v in migs:
+                for e in range(len(migs)):
+                    if l[u, v, e].X > 0.5:
+                        self.timestamps[(u,v)] = e
+                        self.comigrations[e].append((u,v))
+            # for u, v in migs:
+            #     for e in range(len(migs)):
+            #         if l[u, v, e].X > 0.5:
+            #             print('l',u,v,e, self.get_label(u), self.get_label(v))
+            # for (s,t) in migs_st:
+            #     for e in range(len(migs)):
+            #         if pi[e,s,t].X > 0.5:
+            #             print('pi',e,s,t)
+            # for t in locations:
+            #     for e in range(len(migs)):
+            #         if st[t,e].X > 0.5:
+            #             print('st',t,e)
+            return True
 
     def _greedy_comigrations(self):
         """

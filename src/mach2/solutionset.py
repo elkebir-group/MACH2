@@ -53,6 +53,8 @@ class SolutionSet:
     
     def __iter__(self):
         """Returns an iterator over the solutions in the set."""
+        if hasattr(self, 'sol_list'):
+            return iter(self.sol_list)
         return iter(self.solution_set)
 
     def __getitem__(self, index):
@@ -73,7 +75,7 @@ class SolutionSet:
             return s2
         elif len(s2.solution_set) == 0:
             return s1
-        return SolutionSet(s1.solution_set.union(s2.solution_set), check=(s1.unrefined_tree!=s2.unrefined_tree))
+        return SolutionSet(s1.solution_set.union(s2.solution_set), check=(s1.unrefined_tree!=s2.unrefined_tree), ranked=False)
 
     def __sub__(s1, s2):
         """
@@ -120,6 +122,13 @@ class SolutionSet:
             return SolutionSet([sol for sol in self.solution_set if sorter(sol, criteria_ordering) == min_val], check=False)
         else:
             return self
+
+    def filter_solutions_consistent_with_timepoints(self, location_time_map):
+        sols = []
+        for sol in self.solution_set:
+            if sol.check_consistency_with_timepoints(location_time_map):
+                sols.append(sol)
+        return SolutionSet(sols)
         
 
     def co_occurence_table(self):
