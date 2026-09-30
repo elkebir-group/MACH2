@@ -1,0 +1,10 @@
+grey	right_axillary_lymph_node
+dark_pink	right_diaphragm	right_axillary_lymph_node	xiphoid	right_rib
+blue	xiphoid
+orange	right_diaphragm
+dark_green	right_diaphragm	right_axillary_lymph_node	right_rib
+light_blue	right_diaphragm	right_axillary_lymph_node	right_rib
+artificial_root	prostate
+mid_greenA	right_axillary_lymph_node
+goldE	xiphoid
+pinkD	right_rib

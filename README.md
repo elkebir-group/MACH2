@@ -21,6 +21,8 @@ For the accompanying visualization tool, see [MACH2-viz](https://github.com/elke
                 2.2.1 [From `JupyterLab`](#221-from-jupyterlab)  
                 2.2.2 [From Terminal](#222-from-terminal)  
 3. [Reproduction](#3-reproduction)  
+        3.1 [Data](#31-data)  
+        3.2 [Running the methods](#32-running-the-methods)  
 
 
 ## 1. Installation
@@ -175,10 +177,16 @@ Additionaly `MACH2` can return JSON file encoding all the solutions. The JSON fi
 
 An example execution
 
-        $ mach2 data/breast/A1.tree data/breast/A1.observed.labeling -p breast --colormap data/breast/coloring.txt
+        $ mach2 data/real/breast/A1.mach2.tree data/real/breast/A1.mach2.labeling -p breast
         
 For this specific instance, MACH2 takes less than one second to run on a normal computer.
 
 ## 3. Reproduction
 
-We include a [JupyterLab notebook](https://github.com/elkebir-group/MACH2/blob/main/analysis/run.ipynb) containing relevant codes to run MACH2 (and also the other migration history inference methods) on all the simulated and real data and generate the results presented in the preprint.
+### 3.1 Data
+
+The [`data`](data) folder contains the clonal trees and observed labelings of all simulated and real instances used in the paper, in the formats described in [I/O formats](#21-io-formats), and the ground truth of the simulated instances. Its organization is described in [data/README.md](data/README.md).
+
+### 3.2 Running the methods
+
+We include a [JupyterLab notebook](https://github.com/elkebir-group/MACH2/blob/main/analysis/run.ipynb) that generates the MACHINA and Metient inputs from the data above and runs MACH2, MACHINA and Metient on all the simulated and real data with the settings used in the paper.
