@@ -7,12 +7,10 @@ MACH2, MACHINA and Metient with the settings of the paper.
 
 ```
 data/
-├── simulations/
-│   ├── set1/m5/{mS,S,M,R}/<seed>.*                          first set:    40 instances
-│   ├── set2/baseline/, set2/<parameter>=<value>/<seed>.*     second set:   70 instances
-│   └── set3/number-of-locations=<n>/mutation-rate=<m>/driver-mutation-probability=<d>/
-│            migration-rate=<g>/number-of-samples-per-location=<k>/migration-pattern=<p>/<seed>.*
-│                                                             third set:  4860 instances
+├── sims/
+│   ├── set1/m5/{mS,S,M,R}/<seed>/                                  first set:    40 instances
+│   ├── set2/<varying parameter>/<alternate setting>/<seed>/         second set:   70 instances
+│   └── set3/<loc>/<mut>/<mig>/<drivprob>/<nsample>/<mp>/<seed>/     third set:  4860 instances
 └── real/
     ├── lung/<patient>_<rank>.*     TRACERx, 126 patients, 266 instances
     ├── prostate/A<id>.*            Gundem et al. 2015, 10 patients
@@ -24,11 +22,11 @@ data/
 
 | File | Content | Simulations | Real |
 |---|---|:-:|:-:|
-| `<id>.mach2.tree` | clonal tree, one edge `parent child` per line | ✓ | ✓ |
-| `<id>.mach2.labeling` | observed locations of each clone, `node loc1 loc2 …` | ✓ | ✓ |
-| `<id>.gt.mach2.tree` | ground truth: refined tree (`X^L` = copy of clone `X` in location `L`) | ✓ | – |
-| `<id>.gt.mach2.labeling` | ground truth: location of every refined-tree node | ✓ | – |
-| `<id>.mutations.tsv` | number of mutations per clone, as given to Metient in the paper | – | ✓ |
+| `mach2.tree` | clonal tree, one edge `parent child` per line | ✓ | ✓ |
+| `mach2.labeling` | observed locations of each clone, `node loc1 loc2 …` | ✓ | ✓ |
+| `gt.mach2.tree` | ground truth: refined tree (`X^L` = copy of clone `X` in location `L`) | ✓ | – |
+| `gt.mach2.labeling` | ground truth: location of every refined-tree node | ✓ | – |
+| `mutations.tsv` | number of mutations per clone, as given to Metient in the paper | – | ✓ |
 
 ## Number of instances
 
